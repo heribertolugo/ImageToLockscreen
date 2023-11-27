@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows;
 using System.Globalization;
 
-namespace ImageToLockscreen
+namespace ImageToLockscreen.Ui
 {
     public class TextInputToVisibilityConverter : IValueConverter
     {
