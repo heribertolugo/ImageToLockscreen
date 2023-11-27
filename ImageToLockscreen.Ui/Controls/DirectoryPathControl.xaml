@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="ImageToLockscreen.Controls.DirectoryPathControl"
+﻿<UserControl x:Class="ImageToLockscreen.Ui.Controls.DirectoryPathControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ImageToLockscreen"
+             xmlns:local="clr-namespace:ImageToLockscreen.Ui"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -20,9 +20,12 @@
             <Setter Property="Margin" Value="20,0" />
         </Style>
     </UserControl.Resources>
+    
+    
+    
     <Grid VerticalAlignment="Top">
         <Border CornerRadius="6" BorderBrush="Gray" Background="LightGray" BorderThickness="2" DockPanel.Dock="Top">
-            <DockPanel Grid.Row="1">
+            <DockPanel Grid.Row="0">
                 <Button HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0" Height="18" 
                 BorderThickness="0" Background="Transparent" Click="Button_Click">
                     <Image Source="/Images/Search.png"></Image>
@@ -30,10 +33,6 @@
 
                 <Grid Margin="0,0,0,0" Grid.Row="0" Background="{StaticResource brushWatermarkBackground}" Style="{StaticResource EntryFieldStyle}" 
                     VerticalAlignment="Top" Height="18">
-
-                    <!--<TextBlock Margin="10,2,0,2" Text="{Binding Hint, RelativeSource={RelativeSource AncestorType=UserControl}}" Foreground="{StaticResource brushWatermarkForeground}"
-                        Visibility="{Binding ElementName=userText, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" 
-                        Height="18" LineHeight="1" VerticalAlignment="Top" FontSize="11"/>-->
                     <TextBlock Margin="10,2,0,2" Text="{Binding Hint, RelativeSource={RelativeSource AncestorType=UserControl}}" Foreground="{StaticResource brushWatermarkForeground}"
                         Height="18" LineHeight="1" VerticalAlignment="Top" FontSize="11" 
                         Visibility="{Binding Text.Length, ElementName=userText, Converter={StaticResource TextInputToVisibilityConverter}}">

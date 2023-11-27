@@ -1,8 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using ImageToLockscreen.Ui.Controls;
 
-namespace ImageToLockscreen.Controls
+namespace ImageToLockscreen.Ui.Controls
 {
     /// <summary>
     /// Interaction logic for DirectoryPathControl.xaml
