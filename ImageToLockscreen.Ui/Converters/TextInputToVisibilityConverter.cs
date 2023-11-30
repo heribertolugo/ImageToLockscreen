@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows;
 using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
 
 namespace ImageToLockscreen.Ui
 {
-    public class TextInputToVisibilityConverter : IValueConverter
+    public sealed class TextInputToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -18,9 +14,7 @@ namespace ImageToLockscreen.Ui
             int.TryParse(value?.ToString(), out length);
 
             if (length < 1)
-            {
                 return Visibility.Visible;
-            }
 
             return Visibility.Hidden;
         }
