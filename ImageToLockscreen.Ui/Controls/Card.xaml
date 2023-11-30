@@ -10,7 +10,7 @@
 
         <ControlTemplate TargetType="{x:Type UserControl}" >
             <DockPanel Margin="0,0,0,0" Background="Transparent" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid DockPanel.Dock="Top" ShowGridLines="True" Background="Transparent" AutomationProperties.Name="whatda" 
+                <Grid DockPanel.Dock="Top" ShowGridLines="False" Background="Transparent" 
                       Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.Resources >
                         <Style TargetType="Border" >
@@ -19,13 +19,13 @@
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="52" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32" Grid.Row="1" Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <Image Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="64" Height="64" Grid.Row="1" Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <DockPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" Background="{Binding TitleBackground, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Left" VerticalAlignment="Center" 
