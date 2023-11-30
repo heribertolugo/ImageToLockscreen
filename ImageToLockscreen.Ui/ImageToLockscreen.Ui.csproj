@@ -80,6 +80,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Resource Include="Images\FolderOpenedWhite64.png" />
     <Content Include="Images\Search.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -100,6 +101,7 @@
       <DependentUpon>DirectoryPathControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\FolderBrowserDialog.cs" />
+    <Compile Include="Converters\DarkenColorConverter.cs" />
     <Compile Include="Converters\TextInputToVisibilityConverter.cs" />
     <Compile Include="Core\PropertyObservable.cs" />
     <Compile Include="MainWindow.xaml.cs">
