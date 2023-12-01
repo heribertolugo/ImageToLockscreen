@@ -6,12 +6,14 @@
         xmlns:local="clr-namespace:ImageToLockscreen.Ui" xmlns:control="clr-namespace:ImageToLockscreen.Ui.Controls"
         xmlns:Controls="clr-namespace:ImageToLockscreen.Ui.Controls" x:Class="ImageToLockscreen.Ui.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="627" Width="800">
+        Title="Image To Lockscreen" Height="627" Width="800">
 
     <Window.Resources>
         <SolidColorBrush x:Key="foreground" Color="White" />
         <SolidColorBrush x:Key="fadedForeground" Color="#f1f1f1" Opacity="0.5" />
-        <SolidColorBrush x:Key="brushWatermarkBorder" Color="Indigo" />
+        <SolidColorBrush x:Key="backgroundLight" Color="#FF4A4A4A" />
+        <SolidColorBrush x:Key="backgroundMed" Color="#FF353535" />
+        <SolidColorBrush x:Key="backgroundDark" Color="Indigo" />
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
@@ -23,39 +25,40 @@
         </Style>
     </Window.Resources>
 
-    <Grid Background="#FF353535" Margin="0,0,0,4">
+    <Grid Background="{Binding Source={StaticResource backgroundMed}}" Margin="0,0,0,4" Name="main" ShowGridLines="False">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <GroupBox Header="Image Directories" Margin="10,10,10,10" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0" Foreground="#D5DFE5" Background="#FF4A4A4A" BorderThickness="0.5,0.5,0.5,0.5">
-            <GroupBox.Effect>
-                <DropShadowEffect BlurRadius="20" Direction="270" ShadowDepth="10"/>
-            </GroupBox.Effect>
-            <StackPanel>
-                <control:DirectoryPathControl Hint="Browse or type input directory path" FolderDialogTitle="Select input directory" Margin="20,10,20,0" Background="{Binding Background, RelativeSource={RelativeSource AncestorType=GroupBox}}"/>
-                <control:DirectoryPathControl Hint="Browse or type ouput directory path" FolderDialogTitle="Select output directory" Margin="20,10,20,10"/>
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Image Output Options" Margin="10,10,10,0" VerticalAlignment="Top" Grid.Row="1" Grid.Column="0" Height="164" Grid.RowSpan="2" Foreground="{Binding Source={StaticResource foreground}}"/>
-        <Controls:Card HorizontalAlignment="Left" Margin="28,220,0,0" Grid.Row="2" VerticalAlignment="Top" Height="150" Width="710" Title="testering" 
-                       TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/FolderOpenedWhite64.png" FontSize="20">
-            <!--<DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">-->
-                <StackPanel DockPanel.Dock="Top" Height="Auto" HorizontalAlignment="Stretch">
+
+        <Controls:Card Margin="5,20,5,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Directories" 
+                       TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/FolderOpenedWhite128.png" FontSize="15">
+            <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
                     <control:DirectoryPathControl Hint="Browse or type input directory path" FolderDialogTitle="Select input directory" Margin="20,10,20,0" 
                         HorizontalAlignment="Stretch"
                         Foreground="{Binding Source={StaticResource foreground}}"
-                        Background="{Binding Background, RelativeSource={RelativeSource AncestorType=GroupBox}}" 
-                        HintColor="{Binding Source={StaticResource fadedForeground}}"/>
-                    <control:DirectoryPathControl Hint="Browse or type ouput directory path" FolderDialogTitle="Select output directory" Margin="20,10,20,10" Background="{Binding Background, RelativeSource={RelativeSource AncestorType=GroupBox}}"/>
+                        Background="{Binding Source={StaticResource backgroundMed}}" 
+                        HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25"/>
+                    <control:DirectoryPathControl Hint="Browse or type ouput directory path" FolderDialogTitle="Select output directory" Margin="20,10,20,10" 
+                        HorizontalAlignment="Stretch"
+                        Foreground="{Binding Source={StaticResource foreground}}"
+                        Background="{Binding Source={StaticResource backgroundMed}}" 
+                        HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25"/>
                 </StackPanel>
-            <!--</DockPanel>-->
+            </DockPanel>
         </Controls:Card>
-        <TextBlock HorizontalAlignment="Left" Margin="135,432,0,0" Grid.Row="2" FontSize="20" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="196"/>
+        <Controls:Card Margin="5,20,5,0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Output Options" 
+               TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/SettingsFileWhite128.png" FontSize="15">
+            <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
+                    
+                </StackPanel>
+            </DockPanel>
+        </Controls:Card>
 
     </Grid>
 </Window>
