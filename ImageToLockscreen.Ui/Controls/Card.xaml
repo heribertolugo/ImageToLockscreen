@@ -8,7 +8,9 @@
              d:DesignHeight="450" d:DesignWidth="800" Background="Transparent">
     <UserControl.Template>
 
-        <ControlTemplate TargetType="{x:Type UserControl}" >
+        <ControlTemplate TargetType="{x:Type UserControl}">
+            <Border BorderBrush="{Binding TitleForeground, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+            BorderThickness="1,1,1,1" Margin="10,5,10,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <DockPanel Margin="0,0,0,0" Background="Transparent" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid DockPanel.Dock="Top" ShowGridLines="False" Background="Transparent" 
                       Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -18,18 +20,19 @@
                         </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="52" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="64" Height="64" Grid.Row="1" Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <Image Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="64" Height="64" MaxHeight="256" MaxWidth="256" Grid.Row="1" 
+                           Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <DockPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" Background="{Binding TitleBackground, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                            Foreground="{Binding TitleForeground, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                            Foreground="{Binding TitleForeground, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold"/>
                     </DockPanel>
 
                     <Border Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -38,6 +41,7 @@
 
                 </Grid>
             </DockPanel>
+            </Border>
         </ControlTemplate>
     </UserControl.Template>
 </UserControl>
