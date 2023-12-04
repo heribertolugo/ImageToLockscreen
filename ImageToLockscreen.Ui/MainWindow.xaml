@@ -3,9 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ImageToLockscreen.Ui" xmlns:control="clr-namespace:ImageToLockscreen.Ui.Controls"
-        xmlns:Controls="clr-namespace:ImageToLockscreen.Ui.Controls" x:Class="ImageToLockscreen.Ui.MainWindow"
-        mc:Ignorable="d"
+        xmlns:local="clr-namespace:ImageToLockscreen.Ui" 
+        xmlns:control="clr-namespace:ImageToLockscreen.Ui.Controls"
+        xmlns:Controls="clr-namespace:ImageToLockscreen.Ui.Controls"
+        xmlns:Converters="clr-namespace:ImageToLockscreen.Ui.Converters"
+        mc:Ignorable="d" x:Class="ImageToLockscreen.Ui.MainWindow"
         Title="Image To Lockscreen" Height="627" Width="800">
 
     <Window.Resources>
@@ -16,7 +18,8 @@
         <SolidColorBrush x:Key="backgroundDark" Color="Indigo" />
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
+        <Converters:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
+        <Converters:BoolToVisibilityConverter x:Key="OutputImageOptionsConverter" />
 
         <Style x:Key="EntryFieldStyle" TargetType="{x:Type Grid}" >
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -34,7 +37,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Controls:Card Margin="5,20,5,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Directories" 
+        <control:Card Margin="5,20,5,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Directories" 
                        TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/FolderOpenedWhite128.png" FontSize="15">
             <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
@@ -50,13 +53,32 @@
                         HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25"/>
                 </StackPanel>
             </DockPanel>
-        </Controls:Card>
+        </control:Card>
         <Controls:Card Margin="5,20,5,0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Output Options" 
                TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/SettingsFileWhite128.png" FontSize="15">
             <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
-                    
-                </StackPanel>
+                <GroupBox Header=" Background Fill " Foreground="{Binding Source={StaticResource foreground}}">
+                    <DockPanel LastChildFill="True" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                            <RadioButton GroupName="outputOptions" Content="Solid Color" Foreground="{Binding Source={StaticResource foreground}}" Margin="20,10,0,10" 
+                                         Name="backgroundFillSolidColorOption" IsChecked="True"/>
+                            <RadioButton GroupName="outputOptions" Content="Image" Foreground="{Binding Source={StaticResource foreground}}" Margin="20,10,0,10" 
+                                         Name="backgroundFillImageOption"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
+
+                            <ComboBox SelectedIndex="0" Margin="20,0,0,0" Visibility="{Binding IsChecked, ElementName=backgroundFillImageOption, Converter={StaticResource OutputImageOptionsConverter}}">
+                                <RadioButton Content="Self" IsChecked="True" Name="selfImageOption"/>
+                                <RadioButton Content="Browse" Name="browseImageOption"/>
+                                <Separator Background="#FF040404" BorderBrush="Black" BorderThickness="0,0,0,5"/>
+                                <CheckBox Content="Blur" Name="blurImageOption"/>
+                                
+                            </ComboBox>
+                            <control:ColorPicker Width="231" FontSize="25" Foreground="{Binding Source={StaticResource foreground}}" 
+                                                  Visibility="{Binding IsChecked, ElementName=backgroundFillSolidColorOption, Converter={StaticResource OutputImageOptionsConverter}}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </GroupBox>
             </DockPanel>
         </Controls:Card>
 
