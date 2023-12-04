@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace ImageToLockscreen.Ui
+namespace ImageToLockscreen.Ui.Converters
 {
     public sealed class TextInputToVisibilityConverter : IValueConverter
     {
