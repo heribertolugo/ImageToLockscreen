@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--<ControlTemplate x:Key="RadioButtonTemplate" TargetType="{x:Type RadioButton}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="20" />
+            </Grid.ColumnDefinitions>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CheckedStates">
+                    <VisualState x:Name="Checked" />
+                    <VisualState x:Name="Unchecked" />
+                    <Setter Property="Background" Value="Red" />
+                    <Setter Property="BorderBrush"  Value="Red" />
+                    <Setter Property="Background"  Value="Red" />
+                    <Setter TargetName="Checked" Property="Opacity"  Value="0" />
+
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+        </Grid>
+    </ControlTemplate>-->
+</ResourceDictionary>
