@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace ImageToLockscreen.Ui
+namespace ImageToLockscreen.Ui.Converters
 {
     public sealed class DarkenColorConverter : IValueConverter
     {
