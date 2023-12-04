@@ -162,7 +162,7 @@
     </Compile>
     <Compile Include="Controls\FolderBrowserDialog.cs" />
     <Compile Include="Converters\DarkenColorConverter.cs" />
-    <Compile Include="Converters\OutputImageOptionsConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\TextInputToVisibilityConverter.cs" />
     <Compile Include="Core\PropertyObservable.cs" />
     <Compile Include="MainWindow.xaml.cs">
