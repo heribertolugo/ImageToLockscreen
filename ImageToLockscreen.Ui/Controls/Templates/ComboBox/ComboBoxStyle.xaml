@@ -28,7 +28,7 @@
                                 Name="ToggleButton" 
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 Background="{TemplateBinding Background}"
-                            Foreground="{TemplateBinding Foreground}"
+                                Foreground="{TemplateBinding Foreground}"
                                 Style="{StaticResource ComboBoxToggleButton}" 
                                 Grid.Column="2" 
                                 Focusable="false"
@@ -38,7 +38,6 @@
                         <ContentPresenter
                                 Name="ContentSite"
                                 IsHitTestVisible="False" 
-                                Content="{TemplateBinding SelectionBoxItem}"
                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                 ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                 Margin="10,3,30,3"
@@ -49,7 +48,7 @@
                                 Template="{StaticResource ComboBoxTextBox}" 
                                 HorizontalAlignment="Center" 
                                 VerticalAlignment="Center" 
-                                Margin="3,3,23,3"
+                                Margin="3,3,35,3"
                                 Focusable="True"                                
                                 Visibility="Hidden"
                                 IsReadOnly="{TemplateBinding IsReadOnly}"/>
