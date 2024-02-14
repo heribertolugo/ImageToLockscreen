@@ -16,7 +16,7 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.SetDefaults();
         }
 
-        public AspectRatio(Ratio ratio, Size bounds, string description = null)
+        public AspectRatio(Ratio ratio, Size bounds, string description = null) : this()
         {
             this.SetRatio(ratio);
             this.Bounds = bounds;
@@ -24,7 +24,7 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.SetRatioImage();
         }
 
-        public AspectRatio(Ratio ratio, Size bounds, IEnumerable<Size> sizes, string description = null)
+        public AspectRatio(Ratio ratio, Size bounds, IEnumerable<Size> sizes, string description = null) : this()
         {
             this.SetRatio(ratio);
             this.Bounds = bounds;
@@ -89,6 +89,8 @@ namespace ImageToLockscreen.Ui.ViewModels
         }
         public void SetRatio(double width, double height)
         {
+            if (width <= 0 || height <= 0)
+                return;
             this.Width = width;
             this.Height = height;
             this.SetRatioImage();
@@ -99,6 +101,8 @@ namespace ImageToLockscreen.Ui.ViewModels
         }
         private void SetRatioImage()
         {
+            if (this.Ratio.Width <= 0 || this.Ratio.Height <= 0 || this.Bounds.Width <= 0 || this.Bounds.Height <= 0)
+                return;
             Size ratioRectSize = AspectRatio.GetNewSize(this.Ratio, this.Bounds);
             Point point = this.CalculateCenterPositioning(this.Bounds, ratioRectSize); 
 
