@@ -11,10 +11,10 @@ namespace ImageToLockscreen.Ui.Controls
         public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register("BorderColor", typeof(Brush), typeof(UserControl));
 
 
-        private ObservableCollection<object> _items;
+        private ObservableCollection<SlideViewerItem> _items;
         public SlideViewer()
         {
-            this._items = new ObservableCollection<object>();
+            this._items = new ObservableCollection<SlideViewerItem>();
         }
 
         public Brush BorderColor
@@ -23,7 +23,7 @@ namespace ImageToLockscreen.Ui.Controls
             set { base.SetValue(BorderColorProperty, value); }
         }
 
-        public ObservableCollection<object> Items
+        public ObservableCollection<SlideViewerItem> Items
         {
             get { return this._items; }
             private set { this._items = value; }
@@ -34,9 +34,9 @@ namespace ImageToLockscreen.Ui.Controls
     {
         //public static readonly DependencyProperty ImageProperty = DependencyProperty.Register("BorderColor", typeof(Brush), typeof(UserControl));
 
-        public Image Image 
+        public Drawing Image 
         {
-            get { return base.GetProperty<Image>(); } 
+            get { return base.GetProperty<Drawing>(); } 
             set { base.SetProperty(value); }
         }
 
