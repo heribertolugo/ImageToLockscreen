@@ -1,9 +1,4 @@
 ﻿using ImageToLockscreen.Ui.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageToLockscreen.Ui.ViewModels
 {
@@ -17,13 +12,13 @@ namespace ImageToLockscreen.Ui.ViewModels
         }
         public string Display
         {
-            get { return GetProperty<string>(); }
-            set { SetProperty(value); }
+            get { return base.GetProperty<string>(); }
+            set { base.SetProperty(value); }
         }
         public object Value
         {
-            get { return GetProperty<string>(); }
-            set { SetProperty(value); }
+            get { return base.GetProperty<string>(); }
+            set { base.SetProperty(value); }
         }
     }
 }
