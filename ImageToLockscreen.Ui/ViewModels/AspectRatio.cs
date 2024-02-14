@@ -1,6 +1,8 @@
 ﻿using ImageToLockscreen.Ui.Core;
 using ImageToLockscreen.Ui.Models;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -20,6 +22,16 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.Bounds = bounds;
             this.Description = description ?? ToString();
             this.SetRatioImage();
+        }
+
+        public AspectRatio(Ratio ratio, Size bounds, IEnumerable<Size> sizes, string description = null)
+        {
+            this.SetRatio(ratio);
+            this.Bounds = bounds;
+            this.Description = description ?? ToString();
+            this.SetRatioImage();
+            foreach(Size size in sizes)
+                this.Resolutions.Add(size);
         }
         public string Description
         {
@@ -71,6 +83,10 @@ namespace ImageToLockscreen.Ui.ViewModels
             get { return new Ratio(this.Width, this.Height); }
             set { this.Width = value.Width; this.Height = value.Height; this.SetRatioImage(); }
         }
+        public ObservableCollection<Size> Resolutions
+        {
+            get; private set;
+        }
         public void SetRatio(double width, double height)
         {
             this.Width = width;
@@ -118,6 +134,7 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.Background = null;
             this.BackgroundColor = Colors.White; //Colors.Transparent;
             this.StrokeColor = Colors.Black;
+            this.Resolutions = new ObservableCollection<Size>();
         }
         public override string ToString()
         {
