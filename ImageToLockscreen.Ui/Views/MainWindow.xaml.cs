@@ -34,6 +34,7 @@ namespace ImageToLockscreen.Ui.Views
                 Title = MainWindow._fileDialogTitle,
                 Filter = MainWindow._fileBrowserFilter
             };
+            this.SetRatios();
         }
 
         internal ObservableCollection<DisplayWithValue> BackgroundFillImageOptions
@@ -90,6 +91,17 @@ namespace ImageToLockscreen.Ui.Views
                 typeface, fontSize, Brushes.Black, this._dpiInfo.PixelsPerDip);
 
             return new Size(formattedText.Width, formattedText.Height);
+        }
+
+        private void SetRatios()
+        {
+            foreach (var ratio in CommonAspectRatios.CommonRatios)
+                this.aspectRatioSlide.Items.Add(new Controls.SlideViewerItem()
+                {
+                    Value = ratio,
+                    Text = ratio.Description,
+                    Image = ratio.Image
+                });
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
