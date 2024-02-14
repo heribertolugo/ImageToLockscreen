@@ -110,13 +110,7 @@
                     </GroupBox>
                     <GroupBox Header=" Aspect Ratio " Foreground="{Binding Source={StaticResource foreground}}"
                               Grid.Column="0" Grid.Row="1" Margin="0,20,0,0" >
-                        <ScrollViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" PanningMode="HorizontalOnly" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
-                            <StackPanel Orientation="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Hidden" CanHorizontallyScroll="True" ScrollViewer.CanContentScroll="True">
-                                <StackPanel Orientation="Vertical">
-                                    
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
+                        <control:SlideViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="aspectRatioSlide"/>
                     </GroupBox>
                 </Grid>
             </DockPanel>
