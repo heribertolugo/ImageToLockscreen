@@ -1,19 +1,13 @@
-﻿using ImageToLockscreen.Ui.Controls;
-using Microsoft.Win32;
+﻿using ImageToLockscreen.Ui.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using System.Windows.Media;
 using ComboBox = System.Windows.Controls.ComboBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-using System.Globalization;
-using ImageToLockscreen.Ui.ViewModels;
 
 namespace ImageToLockscreen.Ui.Views
 {
