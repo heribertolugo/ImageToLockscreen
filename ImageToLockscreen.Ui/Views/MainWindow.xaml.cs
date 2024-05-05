@@ -44,7 +44,7 @@ namespace ImageToLockscreen.Ui.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this._dpiInfo = VisualTreeHelper.GetDpi(this);
+            this._dpiInfo = VisualTreeHelper.GetDpi(this);            
         }
 
         protected override void OnDpiChanged(DpiScale oldDpiScaleInfo, DpiScale newDpiScaleInfo)
