@@ -1,5 +1,7 @@
-﻿using ImageToLockscreen.Ui.Core;
+﻿using ImageToLockscreen.Ui.Controls;
+using ImageToLockscreen.Ui.Core;
 using ImageToLockscreen.Ui.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace ImageToLockscreen.Ui.ViewModels
                 Title = MainViewModel._fileDialogTitle,
                 Filter = MainViewModel._fileBrowserFilter
             };
-            //this.SetRatios();
+            this.SetRatios();
 
             this.BackgroundFillImageOptionSelectionChangedCommand = new RelayCommand(BackgroundFillImageOptionSelectionChanged);
         }
@@ -105,16 +107,22 @@ namespace ImageToLockscreen.Ui.ViewModels
             }
         }
 
-        //private void SetRatios()
-        //{
-        //    foreach (var ratio in CommonAspectRatios.CommonRatios)
-        //        this.aspectRatioSlide.Items.Add(new Controls.SlideViewerItem()
-        //        {
-        //            Value = ratio,
-        //            Text = ratio.Description,
-        //            Image = ratio.Image
-        //        });
-        //}
+        public ObservableCollection<SlideViewerItem> SlideViewerItems
+        {
+            get { return base.GetProperty<ObservableCollection<SlideViewerItem>>(getDefault: () => { return new ObservableCollection<SlideViewerItem>(); }); }
+            set { base.SetProperty(value); }
+        }
+
+        private void SetRatios()
+        {
+            foreach (var ratio in CommonAspectRatios.CommonRatios)
+                this.SlideViewerItems.Add(new Controls.SlideViewerItem()
+                {
+                    Value = ratio,
+                    Text = ratio.Description,
+                    Image = ratio.Image
+                });
+        }
     }
 
     public enum BackgroundFillType
