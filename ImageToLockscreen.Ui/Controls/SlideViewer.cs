@@ -8,13 +8,19 @@ namespace ImageToLockscreen.Ui.Controls
 {
     public class SlideViewer : UserControl
     {
-        public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register("BorderColor", typeof(Brush), typeof(UserControl));
+        public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register(nameof(BorderColor), typeof(Brush), typeof(SlideViewer));
+        public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register(nameof(Items), typeof(ObservableCollection<SlideViewerItem>), typeof(SlideViewer));
+        public static readonly DependencyProperty ItemsStrokeProperty = DependencyProperty.Register(nameof(ItemsStroke), typeof(Color), typeof(SlideViewer), new UIPropertyMetadata(ItemsStrokeChangedHandler));
 
+        public static void ItemsStrokeChangedHandler(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            Color color = (Color)(e.NewValue ?? (((SlideViewer)sender).Foreground as SolidColorBrush).Color);
+            ((SlideViewer)sender).ItemsStroke = color;
+        }
 
-        private ObservableCollection<SlideViewerItem> _items;
         public SlideViewer()
         {
-            this._items = new ObservableCollection<SlideViewerItem>();
+            this.Items = new ObservableCollection<SlideViewerItem>();
         }
 
         public Brush BorderColor
@@ -23,20 +29,24 @@ namespace ImageToLockscreen.Ui.Controls
             set { base.SetValue(BorderColorProperty, value); }
         }
 
+        public Color ItemsStroke
+        {
+            get { return (Color)base.GetValue(ItemsStrokeProperty); }
+            set { base.SetValue(ItemsStrokeProperty, value); }
+        }
+
         public ObservableCollection<SlideViewerItem> Items
         {
-            get { return this._items; }
-            private set { this._items = value; }
+            get { return (ObservableCollection<SlideViewerItem>)base.GetValue(ItemsProperty); }
+            set { base.SetValue(ItemsProperty, value); }
         }
     }
 
     public class SlideViewerItem : PropertyObservable
     {
-        //public static readonly DependencyProperty ImageProperty = DependencyProperty.Register("BorderColor", typeof(Brush), typeof(UserControl));
-
-        public Drawing Image 
+        public DrawingImage Image 
         {
-            get { return base.GetProperty<Drawing>(); } 
+            get { return base.GetProperty<DrawingImage>(); } 
             set { base.SetProperty(value); }
         }
 
