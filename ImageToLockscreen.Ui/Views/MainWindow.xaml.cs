@@ -1,74 +1,23 @@
-﻿using ImageToLockscreen.Ui.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using ComboBox = System.Windows.Controls.ComboBox;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace ImageToLockscreen.Ui.Views
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-
-        private static string _fileDialogTitle = "Please select folder";
-        private static string _fileBrowserFilter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|jpg files (*.jpg;*.jpeg)|*.jpg;*.jpeg|png files (*.png)|*.png";
-        private OpenFileDialog _fileBrowserDialog;
-        private ObservableCollection<DisplayWithValue> _backgroundFillImageOptions = new ObservableCollection<DisplayWithValue>(new List<DisplayWithValue>()
-        {
-            new DisplayWithValue("Self", "Self"), new DisplayWithValue("Browse", "")
-        });
         private DpiScale _dpiInfo;
         public MainWindow()
         {
             InitializeComponent();
             this.Loaded += this.OnLoaded;
-            this._fileBrowserDialog = new OpenFileDialog() { 
-                Multiselect = false,
-                Title = MainWindow._fileDialogTitle,
-                Filter = MainWindow._fileBrowserFilter
-            };
-            this.SetRatios();
         }
 
-        internal ObservableCollection<DisplayWithValue> BackgroundFillImageOptions
+        private void BackgroundFillImageOptionSource_Selected(object sender, RoutedEventArgs e)
         {
-            get { return this._backgroundFillImageOptions; }
-            set { this._backgroundFillImageOptions = value; }
-        }
-
-        private void BackgroundFillImageBrowse(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox comboBox = (e.Source as ComboBox);
-            Action<ComboBox, object, object> setSelected = (combo, selected, content) =>
-            {
-                combo.SelectionChanged -= BackgroundFillImageBrowse;
-                combo.SelectedValue = selected;
-                combo.SelectedItem = selected;
-                this.browseImageOptionPath.Content = content;
-                this.ResizeComboBoxByText(combo);
-                combo.SelectionChanged += BackgroundFillImageBrowse;
-            };
-
-            e.Handled = true;
-
-            if (default(DpiScale).Equals(this._dpiInfo))
-                return;
-
-            if (comboBox == null || comboBox.SelectedItem != this.browseImageOption)
-            {
-                setSelected(comboBox, this.selfImageOption, this.selfImageOption.Content);
-                return;
-            }
-
-            if (this._fileBrowserDialog.ShowDialog() == true)
-                setSelected(comboBox, this.browseImageOptionPath, System.IO.Path.GetFileName(this._fileBrowserDialog.FileName));
+            this.ResizeComboBoxByText(e.Source as ComboBox);
         }
 
         private void ResizeComboBoxByText(ComboBox comboBox)
@@ -91,17 +40,6 @@ namespace ImageToLockscreen.Ui.Views
                 typeface, fontSize, Brushes.Black, this._dpiInfo.PixelsPerDip);
 
             return new Size(formattedText.Width, formattedText.Height);
-        }
-
-        private void SetRatios()
-        {
-            foreach (var ratio in CommonAspectRatios.CommonRatios)
-                this.aspectRatioSlide.Items.Add(new Controls.SlideViewerItem()
-                {
-                    Value = ratio,
-                    Text = ratio.Description,
-                    Image = ratio.Image
-                });
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
