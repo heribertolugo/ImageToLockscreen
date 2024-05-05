@@ -9,42 +9,63 @@ namespace ImageToLockscreen.Ui.Controls
     /// </summary>
     public partial class DirectoryPathControl : UserControl
     {
-        private static string _folderDialogTitle = "Please select folder";
+        private static string _defaultFolderDialogTitle = "Please select folder";
         private FolderBrowserDialog _folderBrowserDialog;
         public DirectoryPathControl()
         {
             InitializeComponent();
-            this.FolderDialogTitle = DirectoryPathControl._folderDialogTitle;
             this._folderBrowserDialog = new FolderBrowserDialog();
+            this.FolderDialogTitle = DirectoryPathControl._defaultFolderDialogTitle;
             this.HintColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#212121"));
         }
 
 
-        public static readonly DependencyProperty HintTextProperty = DependencyProperty.Register("Hint", typeof(string), typeof(UserControl));
-        public static readonly DependencyProperty ValueTextProperty = DependencyProperty.Register("Value", typeof(string), typeof(UserControl));
-        public static readonly DependencyProperty FolderDialogTitleProperty = DependencyProperty.Register("FolderDialogTitle", typeof(string), typeof(UserControl));
-        public static readonly DependencyProperty HintColorProperty = DependencyProperty.Register("HintColor", typeof(Brush), typeof(UserControl));
+        public static readonly DependencyProperty HintProperty = DependencyProperty.Register(nameof(Hint), typeof(string), typeof(DirectoryPathControl), new UIPropertyMetadata(HintTextChangedHandler));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(string), typeof(DirectoryPathControl), new UIPropertyMetadata(ValueTextChangedHandler));
+        public static readonly DependencyProperty FolderDialogTitleProperty = DependencyProperty.Register(nameof(FolderDialogTitle), typeof(string), typeof(DirectoryPathControl), new UIPropertyMetadata(FolderDialogTitleChangedHandler));
+        public static readonly DependencyProperty HintColorProperty = DependencyProperty.Register(nameof(HintColor), typeof(SolidColorBrush), typeof(DirectoryPathControl), new UIPropertyMetadata(HintColorChangedHandler));
         //public static readonly DependencyProperty SearchColorProperty = DependencyProperty.Register("SearchColor", typeof(Brush), typeof(UserControl));
+
+        public static void HintTextChangedHandler(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ((DirectoryPathControl)sender).Hint = e.NewValue as string;
+        }
+        public static void ValueTextChangedHandler(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
+        public static void FolderDialogTitleChangedHandler(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ((DirectoryPathControl)sender).FolderDialogTitle = e.NewValue as string;
+        }
+        public static void HintColorChangedHandler(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ((DirectoryPathControl)sender).HintColor = e.NewValue as SolidColorBrush;
+        }
 
         public string Hint
         {
-            get => (string)GetValue(HintTextProperty);
-            set => SetValue(HintTextProperty, value);
+            get => (string)GetValue(HintProperty);
+            set => SetValue(HintProperty, value);
         }
         public string Value
         {
-            get => (string)GetValue(ValueTextProperty);
-            set => SetValue(ValueTextProperty, value);
+            get => (string)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
         public string FolderDialogTitle
         {
             get => (string)GetValue(FolderDialogTitleProperty);
-            set => SetValue(FolderDialogTitleProperty, value);
+            set 
+            {
+                this._folderBrowserDialog.Title = value;
+                SetValue(FolderDialogTitleProperty, value);
+            }
         }
 
-        public Brush HintColor
+        public SolidColorBrush HintColor
         {
-            get => (Brush)GetValue(HintColorProperty);
+            get => (SolidColorBrush)GetValue(HintColorProperty);
             set => SetValue(HintColorProperty, value);
         }
 
