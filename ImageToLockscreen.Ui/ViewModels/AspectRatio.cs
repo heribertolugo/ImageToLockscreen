@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace ImageToLockscreen.Ui.ViewModels
@@ -43,14 +42,14 @@ namespace ImageToLockscreen.Ui.ViewModels
             get { return GetProperty<Size>(); }
             set { SetProperty(value); }
         }
-        public Drawing Image
+        public DrawingImage Image
         {
-            get { return GetProperty<Drawing>(); }
+            get { return GetProperty<DrawingImage>(); }
             private set { SetProperty(value); }
         }
-        public Image Background
+        public DrawingImage Background
         {
-            get { return GetProperty<Image>(); }
+            get { return GetProperty<DrawingImage>(); }
             set { SetProperty(value); }
         }
         public Color BackgroundColor
@@ -60,12 +59,12 @@ namespace ImageToLockscreen.Ui.ViewModels
         }
         public Color StrokeColor
         {
-            get { return GetProperty<Color>(); }
+            get { return GetProperty<Color>(getDefault: () => { return Colors.Black; }); }
             set { SetProperty(value); this.SetRatioImage(); }
         }
         public int StrokeThickness
         {
-            get { return GetProperty<int>(); }
+            get { return GetProperty<int>(getDefault: () => { return 2; }); }
             set { SetProperty(value); this.SetRatioImage(); }
         }
         public double Width
@@ -113,15 +112,24 @@ namespace ImageToLockscreen.Ui.ViewModels
             // use new size to deermine center positioning
             return new Point();
         } 
-        private static Drawing DrawRatio(Point point, Size size, Color strokeColor, int strokeThickness)
+        private static DrawingImage DrawRatio(Point point, Size size, Color strokeColor, int strokeThickness)
         {
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
             Rect rect = new Rect(point, size);
             Pen pen = new Pen(new SolidColorBrush(strokeColor), strokeThickness);
-            drawingContext.DrawRectangle(null, pen, rect);
-            drawingContext.Close();
-            return drawingVisual.Drawing;
+
+            GeometryGroup shapes = new GeometryGroup();
+            shapes.Children.Add(new RectangleGeometry(rect));
+            GeometryDrawing drawing = new GeometryDrawing();
+            drawing.Geometry = shapes; 
+            drawing.Brush = new LinearGradientBrush(
+                    Colors.Blue,
+                    Color.FromRgb(204, 204, 255),
+                    new Point(0, 0),
+                    new Point(1, 1));
+            drawing.Pen = pen;
+            DrawingImage geometryImage = new DrawingImage(drawing);
+            geometryImage.Freeze();
+            return geometryImage;
         }
 
         private static Size GetNewSize(Ratio ratio, Size bounds)
