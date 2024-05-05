@@ -6,18 +6,14 @@ namespace ImageToLockscreen.Ui.ViewModels
 {
     internal class CommonAspectRatios
     {
-
-        //public CommonAspectRatios()
-        //{
-
-        //}
-
         public static ObservableCollection<AspectRatio> CommonRatios;
         static CommonAspectRatios()
         {
             CommonAspectRatios.CommonRatios = new ObservableCollection<AspectRatio>()
             {
-                new AspectRatio(ratio: new Ratio(3,2), bounds: new Size(32,32),description: "Camera"),
+                new AspectRatio(ratio: new Ratio(3,2), bounds: new Size(32,32),description: "Camera",
+                    sizes: new[] { new Size(2160, 1440), new Size(2560,1700), new Size(3000,2000),
+                        new Size(1500,1000) }),
                 new AspectRatio(ratio: new Ratio(4,3), bounds: new Size(32,32),description: "SDTV / PC",
                     sizes: new[] { new Size(2048, 1536), new Size(1600,1200), new Size(640,480), 
                         new Size(800,600), new Size(1024,768) }),
@@ -33,7 +29,8 @@ namespace ImageToLockscreen.Ui.ViewModels
                 new AspectRatio(ratio: new Ratio(1.85,1), bounds: new Size(32,32),description: "Cinema"),
                 new AspectRatio(ratio: new Ratio(2.35,1), bounds: new Size(32,32),description: "Cinemascope"),
                 new AspectRatio(ratio: new Ratio(9,16), bounds: new Size(32,32),description: "Mobile Vertical"),
-                new AspectRatio(ratio: new Ratio(1,1), bounds: new Size(32,32),description: "Pro"),
+                new AspectRatio(ratio: new Ratio(1,1), bounds: new Size(32,32),description: "Pro", 
+                    sizes: new[] { new Size(1920,1920) }),
                 new AspectRatio(ratio: new Ratio(21,9), bounds: new Size(32,32),description: "UW", 
                     sizes: new[] { new Size(3440,1440), new Size(2560,1080) })
             };
