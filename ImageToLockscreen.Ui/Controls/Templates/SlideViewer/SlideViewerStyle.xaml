@@ -20,7 +20,11 @@
                                         <Border Margin="20,0,0,0">
                                             <StackPanel Orientation="Vertical">
                                                 <Image Source="{Binding Image}" />
-                                                <Label Content="{Binding Text}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalContentAlignment="Center" />
+                                                <Label Content="{Binding Text}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                       HorizontalContentAlignment="Center" />
+                                                <StackPanel.ToolTip>
+                                                    <ToolTip Content="{Binding Tooltip}" />
+                                                </StackPanel.ToolTip>
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
