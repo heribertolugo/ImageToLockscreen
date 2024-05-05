@@ -61,5 +61,11 @@ namespace ImageToLockscreen.Ui.Controls
             get { return base.GetProperty<object>(); }
             set { base.SetProperty(value); }
         }
+
+        public string Tooltip
+        {
+            get { return base.GetProperty<string>(); }
+            set { base.SetProperty(value); }
+        }
     }
 }
