@@ -8,14 +8,19 @@
                 <ControlTemplate TargetType="{x:Type local:SlideViewer}">
                     <Border BorderBrush="{Binding BorderColor, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                         BorderThickness="1,1,1,1" Margin="10,5,10,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <ScrollViewer>
-                            <ItemsControl ItemsSource="{Binding Items}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" >
+                            <ItemsControl ItemsSource="{Binding Items, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Width="175">
+                                        <Border Margin="20,0,0,0">
                                             <StackPanel Orientation="Vertical">
                                                 <Image Source="{Binding Image}" />
-                                                <TextBlock Text="{Binding Text}" />
+                                                <Label Content="{Binding Text}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalContentAlignment="Center" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
