@@ -5,11 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageToLockscreen.Ui" 
         xmlns:control="clr-namespace:ImageToLockscreen.Ui.Controls"
-        xmlns:Controls="clr-namespace:ImageToLockscreen.Ui.Controls"
         xmlns:Converters="clr-namespace:ImageToLockscreen.Ui.Converters"
         xmlns:vm="clr-namespace:ImageToLockscreen.Ui.ViewModels"
         mc:Ignorable="d" x:Class="ImageToLockscreen.Ui.Views.MainWindow"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="Image To Lockscreen" Height="627" Width="800">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
 
     <Window.Resources>
         <SolidColorBrush x:Key="foreground" Color="White" />
@@ -38,6 +41,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <control:Card Margin="5,20,5,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Directories" 
@@ -57,9 +61,9 @@
                 </StackPanel>
             </DockPanel>
         </control:Card>
-        <Controls:Card Margin="5,20,5,0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Output Options" 
+        <control:Card Margin="5,20,5,0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Output Options" 
                TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/SettingsFileWhite128.png" FontSize="15" 
-                       x:Name="imageOutputOptionsCard">
+                       x:Name="imageOutputOptionsCard" DataContext="{Binding}">
             <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -69,20 +73,19 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <GroupBox Header=" Background Fill " Foreground="{Binding Source={StaticResource foreground}}" 
                               Grid.Column="0" Grid.Row="0">
                         <DockPanel LastChildFill="True" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                             <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
                                 <RadioButton GroupName="outputOptions" Content="Solid Color" Foreground="{Binding Source={StaticResource foreground}}" Margin="20,10,0,10" 
-                                             Name="backgroundFillSolidColorOption" IsChecked="False"/>
+                                             Name="backgroundFillSolidColorOption" IsChecked="{Binding IsBackgroundFillSolidColor}"/>
                                 <RadioButton GroupName="outputOptions" Content="Image" Foreground="{Binding Source={StaticResource foreground}}" Margin="20,10,0,10" 
-                                             Name="backgroundFillImageOption" IsChecked="True"/>
+                                             Name="backgroundFillImageOption"/>
                             </StackPanel>
                             <Grid DockPanel.Dock="Top" UseLayoutRounding="True">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Name="backgroundFillImageOptionsGrid" 
-                                      Visibility="{Binding IsChecked, ElementName=backgroundFillImageOption, Converter={StaticResource OutputImageOptionsConverter}}"
-                                       DataContext="{Binding Source={StaticResource displayWithValue}}">
+                                      Visibility="{Binding IsChecked, ElementName=backgroundFillImageOption, Converter={StaticResource OutputImageOptionsConverter}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -92,17 +95,36 @@
                                     </Grid.RowDefinitions>
 
                                     <ComboBox SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="0"
-                                              Name="backgroundFillImageOptionSource" IsEditable="True" IsReadOnly="True" SelectionChanged="BackgroundFillImageBrowse" 
-                                              MinWidth="185" MaxWidth="{Binding Width, ElementName=backgroundFillImageOptionsGrid}">
-                                        <ComboBoxItem Content="Self" x:Name="selfImageOption"/>
-                                        <ComboBoxItem Content="Browse" x:Name="browseImageOption"/>
-                                        <ComboBoxItem Content="" x:Name="browseImageOptionPath" Visibility="Collapsed"/>
-
+                                              Name="backgroundFillImageOptionSource" IsEditable="True" IsReadOnly="True" MinWidth="185" 
+                                              MaxWidth="{Binding Width, ElementName=backgroundFillImageOptionsGrid}" ItemsSource="{Binding BackgroundFillImageOptions}"
+                                              DisplayMemberPath="Display" SelectedValuePath="Value" SelectedItem="{Binding Path=SelectedBackgroundFillOption, Mode=TwoWay}">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="SelectionChanged">
+                                                <i:InvokeCommandAction Command="{Binding BackgroundFillImageOptionSelectionChangedCommand}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                        <ComboBox.Style>
+                                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                                <Setter Property="ItemsSource" Value="{Binding Path=BackgroundFillImageOptions, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                                                <Setter Property="ItemContainerStyle">
+                                                    <Setter.Value>
+                                                        <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ComboBox.Style>
                                     </ComboBox>
 
-                                    <CheckBox Content="Blur" x:Name="blurImageOption" Grid.Column="1" Grid.Row="0" Background="{x:Null}" Foreground="White" Margin="20,0,0,0" FontSize="20" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                                    <CheckBox Content="Blur" x:Name="blurImageOption" Grid.Column="1" Grid.Row="0" Background="{x:Null}" Foreground="White" 
+                                              Margin="20,0,0,0" FontSize="20" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsBlurBackgroundImage}"/>
                                 </Grid>
-                                <control:ColorPicker Width="231" FontSize="25" Foreground="{Binding Source={StaticResource foreground}}" 
+                                <control:ColorPicker Width="231" FontSize="25" Foreground="{Binding Source={StaticResource foreground}}" SelectedColor="{Binding BackgroundFillColor}"
                                                      Visibility="{Binding IsChecked, ElementName=backgroundFillSolidColorOption, Converter={StaticResource OutputImageOptionsConverter}}" 
                                                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
@@ -114,7 +136,7 @@
                     </GroupBox>
                 </Grid>
             </DockPanel>
-        </Controls:Card>
+        </control:Card>
 
     </Grid>
 </Window>
