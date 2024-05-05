@@ -119,8 +119,9 @@ namespace ImageToLockscreen.Ui.ViewModels
                 this.SlideViewerItems.Add(new Controls.SlideViewerItem()
                 {
                     Value = ratio,
-                    Text = ratio.Description,
-                    Image = ratio.Image
+                    Text = $"{ratio.Description} ({ratio})",
+                    Image = ratio.Image, 
+                    Tooltip = string.Join(" ", ratio.Resolutions.Select(r => $"[{r.Width} × {r.Height}px]")),
                 });
         }
     }
