@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="/ImageToLockscreen.Ui;component/Controls/Templates/RadioButton/RadioButtonStyle.xaml" x:Name="ImageRadioButton" />
                 <ResourceDictionary Source="/ImageToLockscreen.Ui;component/Controls/Templates/Card/CardStyle.xaml" x:Name="Card" />
                 <ResourceDictionary Source="/ImageToLockscreen.Ui;component/Controls/Templates/CheckBox/CheckBoxStyle.xaml" />
+                <ResourceDictionary Source="/ImageToLockscreen.Ui;component/Controls/Templates/SlideViewer/SlideViewerStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
