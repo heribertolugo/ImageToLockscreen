@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -72,6 +73,25 @@ namespace ImageToLockscreen.Ui.ViewModels
             set { base.SetProperty(value); }
         }
 
+        public Size CurrentScreenResolution
+        {
+            get { return base.GetProperty<Size>(); }
+            set 
+            { 
+                base.SetProperty(value);
+
+                this.SelectedAspectRatio = this.SlideViewerItems.FirstOrDefault(i => ((AspectRatio)i.Value).Resolutions.Any(r => r == this.CurrentScreenResolution));
+                if (this.SelectedAspectRatio == null)
+                    this.SelectedAspectRatio = this.SlideViewerItems.FirstOrDefault(i => ((AspectRatio)i.Value).Height/ ((AspectRatio)i.Value).Width == this.CurrentScreenResolution.Height/ this.CurrentScreenResolution.Width);
+            }
+        }
+
+        public SlideViewerItem SelectedAspectRatio
+        {
+            get { return base.GetProperty<SlideViewerItem>(); }
+            set { base.SetProperty(value); }
+        }
+
         public ICommand BackgroundFillImageOptionSelectionChangedCommand { get; set; }
 
         private void BackgroundFillImageOptionSelectionChanged()
@@ -116,13 +136,19 @@ namespace ImageToLockscreen.Ui.ViewModels
         private void SetRatios()
         {
             foreach (var ratio in CommonAspectRatios.CommonRatios)
-                this.SlideViewerItems.Add(new Controls.SlideViewerItem()
+            {
+                SlideViewerItem aspectRatioItem = new Controls.SlideViewerItem()
                 {
                     Value = ratio,
                     Text = $"{ratio.Description} ({ratio})",
-                    Image = ratio.Image, 
+                    Image = ratio.Image,
                     Tooltip = string.Join(" ", ratio.Resolutions.Select(r => $"[{r.Width} × {r.Height}px]")),
-                });
+                };
+                this.SlideViewerItems.Add(aspectRatioItem);
+
+                if (ratio.Resolutions.Any(r => r == this.CurrentScreenResolution || (ratio.Height / ratio.Width) == (r.Height / r.Width)))
+                    this.SelectedAspectRatio = aspectRatioItem;
+            }
         }
     }
 

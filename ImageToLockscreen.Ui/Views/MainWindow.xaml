@@ -133,8 +133,8 @@
                     </GroupBox>
                     <GroupBox Header=" Aspect Ratio " Foreground="{Binding Source={StaticResource foreground}}" x:Name="aspectRatioGroup"
                               Grid.Column="0" Grid.Row="1" Margin="0,20,0,0" >
-                        <control:SlideViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="aspectRatioSlide" 
-                                         Width="{Binding Width, ElementName=aspectRatioGroup}" Foreground="{StaticResource foreground}" Items="{Binding SlideViewerItems}"/>
+                        <control:SlideViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="aspectRatioSlide" Background="{Binding Source={StaticResource backgroundMed}}" 
+                                         Width="{Binding Width, ElementName=aspectRatioGroup}" Foreground="{StaticResource foreground}" Items="{Binding SlideViewerItems}" SelectedItem="{Binding SelectedAspectRatio}"/>
                     </GroupBox>
                 </Grid>
             </DockPanel>
