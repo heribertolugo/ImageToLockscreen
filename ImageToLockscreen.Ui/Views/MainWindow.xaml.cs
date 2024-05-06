@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ImageToLockscreen.Ui.ViewModels;
+using Microsoft.Win32;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
@@ -13,6 +15,7 @@ namespace ImageToLockscreen.Ui.Views
         {
             InitializeComponent();
             this.Loaded += this.OnLoaded;
+            SystemEvents.DisplaySettingsChanged += this.SystemEvents_DisplaySettingsChanged;
         }
 
         private void BackgroundFillImageOptionSource_Selected(object sender, RoutedEventArgs e)
@@ -44,12 +47,38 @@ namespace ImageToLockscreen.Ui.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this._dpiInfo = VisualTreeHelper.GetDpi(this);            
+            this.SetRatioOnViewModel(this.GetCurrentScreenWorkArea(this));
+        }
+
+        public Rect GetCurrentScreenWorkArea(System.Windows.Window window)
+        {
+            // see: https://stackoverflow.com/a/65999556/6368401
+            this._dpiInfo = VisualTreeHelper.GetDpi(window);
+            //var screen = Screen.FromPoint(new System.Drawing.Point((int)window.Left, (int)window.Top));
+
+            //return new Rect { Width = screen.WorkingArea.Width / this._dpiInfo.DpiScaleX, Height = screen.WorkingArea.Height / this._dpiInfo.DpiScaleY };
+
+            return new Rect { Width = System.Windows.SystemParameters.PrimaryScreenWidth / this._dpiInfo.DpiScaleX, 
+                Height = System.Windows.SystemParameters.PrimaryScreenHeight / this._dpiInfo.DpiScaleY };
         }
 
         protected override void OnDpiChanged(DpiScale oldDpiScaleInfo, DpiScale newDpiScaleInfo)
         {
-            this._dpiInfo = newDpiScaleInfo;
+            this.SetRatioOnViewModel(this.GetCurrentScreenWorkArea(this));
+        }
+
+        void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        {
+            this.SetRatioOnViewModel(this.GetCurrentScreenWorkArea(this));
+        }
+
+        private void SetRatioOnViewModel(Rect rect)
+        {
+            var vm = this.DataContext as MainViewModel;
+
+            if (vm == null) return;
+
+            vm.CurrentScreenResolution = new Size(rect.Width, rect.Height);
         }
     }
 }
