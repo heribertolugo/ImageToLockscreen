@@ -7,7 +7,7 @@ namespace ImageToLockscreen.Ui.Converters
 {
     public sealed class DarkenColorConverter : IValueConverter
     {
-        private static readonly int MinLightness = 1;
+        private static readonly int MinLightness = -10;
         private static readonly int MaxLightness = 10;
         private static readonly float MinLightnessCoef = 1f;
         private static readonly float MaxLightnessCoef = 0.4f;
@@ -35,11 +35,16 @@ namespace ImageToLockscreen.Ui.Converters
             else if (lightness > MaxLightness)
                 lightness = MaxLightness;
 
-            float coef = MinLightnessCoef +
-                (
-                    (lightness - MinLightness) * ((MaxLightnessCoef - MinLightnessCoef) / (MaxLightness - MinLightness))
-                );
+            float coef = MinLightnessCoef + CalcShift((lightness - MinLightness), ((MaxLightnessCoef - MinLightnessCoef) / (MaxLightness - MinLightness)), lightness);
+
             return Color.FromArgb(color.A, (byte)(color.R * coef), (byte)(color.G * coef), (byte)(color.B * coef));
+        }
+
+        private static float CalcShift(float value1, float value2, int lightness)
+        {
+            if (lightness < 1)
+                return value1 / value2;
+            return value1 * value2;
         }
 
         private static ColorBytes HexStringToByteArray(string hex)
