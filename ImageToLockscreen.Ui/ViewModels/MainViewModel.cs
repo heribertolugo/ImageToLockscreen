@@ -14,7 +14,7 @@ namespace ImageToLockscreen.Ui.ViewModels
 {
     public class MainViewModel : PropertyObservable
     {
-        private static string _fileDialogTitle = "Please select folder";
+        private static string _fileDialogTitle = "Please select image";
         private readonly static string _fileBrowserFilter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|jpg files (*.jpg;*.jpeg)|*.jpg;*.jpeg|png files (*.png)|*.png";
         private OpenFileDialog _fileBrowserDialog;
         private ObservableCollection<DisplayWithValue> _backgroundFillImageOptions = new ObservableCollection<DisplayWithValue>(new List<DisplayWithValue>()
@@ -96,7 +96,7 @@ namespace ImageToLockscreen.Ui.ViewModels
 
         private void BackgroundFillImageOptionSelectionChanged()
         {
-            var option = _backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Url);
+            var option = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Url);
             
             if (this.SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Browse
                 && this._fileBrowserDialog.ShowDialog() == true)
@@ -110,6 +110,8 @@ namespace ImageToLockscreen.Ui.ViewModels
             {
                 this.IsSelectedBackgroundFillOptionUrl = false;
                 option.IsVisible = false;
+                option.Display = string.Empty;
+                this.SelectedBackgroundFillOption = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Self);
             }
         }
 
