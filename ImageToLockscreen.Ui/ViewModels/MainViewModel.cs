@@ -1,7 +1,6 @@
 ﻿using ImageToLockscreen.Ui.Controls;
 using ImageToLockscreen.Ui.Core;
 using ImageToLockscreen.Ui.Models;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,6 +13,7 @@ namespace ImageToLockscreen.Ui.ViewModels
 {
     public class MainViewModel : PropertyObservable
     {
+        #region Private Members
         private static string _fileDialogTitle = "Please select image";
         private readonly static string _fileBrowserFilter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|jpg files (*.jpg;*.jpeg)|*.jpg;*.jpeg|png files (*.png)|*.png";
         private OpenFileDialog _fileBrowserDialog;
@@ -23,6 +23,8 @@ namespace ImageToLockscreen.Ui.ViewModels
             new DisplayWithValue("Browse", BackgroundFillImageOption.Browse, true),
             new DisplayWithValue("", BackgroundFillImageOption.Url, false)
         });
+        #endregion Private Members
+
 
         public MainViewModel()
         {
@@ -35,8 +37,11 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.SetRatios();
 
             this.BackgroundFillImageOptionSelectionChangedCommand = new RelayCommand(BackgroundFillImageOptionSelectionChanged);
+            this.ConvertImagesCommand = new RelayCommand(this.ConvertImages);
         }
 
+
+        #region Public Properties
         public string InputDirectory
         {
             get { return base.GetProperty<string>(); }
@@ -92,8 +97,34 @@ namespace ImageToLockscreen.Ui.ViewModels
             set { base.SetProperty(value); }
         }
 
-        public ICommand BackgroundFillImageOptionSelectionChangedCommand { get; set; }
+        public ObservableCollection<DisplayWithValue> BackgroundFillImageOptions
+        {
+            get
+            {
+                return this._backgroundFillImageOptions;
+            }
+            set
+            {
+                this._backgroundFillImageOptions = value;
+                base.OnPropertyChanged(nameof(BackgroundFillImageOptions));
+            }
+        }
 
+        public ObservableCollection<SlideViewerItem> SlideViewerItems
+        {
+            get { return base.GetProperty<ObservableCollection<SlideViewerItem>>(getDefault: () => { return new ObservableCollection<SlideViewerItem>(); }); }
+            set { base.SetProperty(value); }
+        }
+        #endregion Public Properties
+
+
+        #region Public ICommand
+        public ICommand BackgroundFillImageOptionSelectionChangedCommand { get; set; }
+        public ICommand ConvertImagesCommand { get; set; }
+        #endregion Public ICommand
+
+
+        #region Private ICommand
         private void BackgroundFillImageOptionSelectionChanged()
         {
             var option = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Url);
@@ -114,26 +145,12 @@ namespace ImageToLockscreen.Ui.ViewModels
                 this.SelectedBackgroundFillOption = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Self);
             }
         }
-
-
-        public ObservableCollection<DisplayWithValue> BackgroundFillImageOptions
+        private void ConvertImages()
         {
-            get 
-            { 
-                return this._backgroundFillImageOptions; 
-            }
-            set 
-            { 
-                this._backgroundFillImageOptions = value; 
-                base.OnPropertyChanged(nameof(BackgroundFillImageOptions)); 
-            }
+            System.Console.WriteLine("Converting images");
         }
+        #endregion Private ICommand
 
-        public ObservableCollection<SlideViewerItem> SlideViewerItems
-        {
-            get { return base.GetProperty<ObservableCollection<SlideViewerItem>>(getDefault: () => { return new ObservableCollection<SlideViewerItem>(); }); }
-            set { base.SetProperty(value); }
-        }
 
         private void SetRatios()
         {
