@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ImageToLockscreen.Ui" 
+        xmlns:local="clr-namespace:ImageToLockscreen.Ui.Views" 
         xmlns:control="clr-namespace:ImageToLockscreen.Ui.Controls"
         xmlns:Converters="clr-namespace:ImageToLockscreen.Ui.Converters"
         xmlns:vm="clr-namespace:ImageToLockscreen.Ui.ViewModels"
         mc:Ignorable="d" x:Class="ImageToLockscreen.Ui.Views.MainWindow"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors" d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
-        Title="Image To Lockscreen" Height="627" Width="800">
+        Title="Image To Lockscreen" Width="800" SizeToContent="Height" Foreground="AliceBlue">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -37,6 +37,7 @@
     <Grid Background="{Binding Source={StaticResource backgroundMed}}" Margin="0,0,0,4" Name="main" ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -44,7 +45,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <control:Card Margin="5,20,5,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Directories" 
+        <control:Card Margin="5,20,5,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Directories" 
                        TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/FolderOpenedWhite128.png" FontSize="15">
             <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
@@ -61,7 +62,7 @@
                 </StackPanel>
             </DockPanel>
         </control:Card>
-        <control:Card Margin="5,20,5,0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Output Options" 
+        <control:Card Margin="5,20,5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="Auto" HorizontalAlignment="Stretch" Title="Image Output Options" 
                TitleForeground="{Binding Source={StaticResource foreground}}" Icon="/Images/SettingsFileWhite128.png" FontSize="15" 
                        x:Name="imageOutputOptionsCard" DataContext="{Binding}">
             <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -139,6 +140,33 @@
                 </Grid>
             </DockPanel>
         </control:Card>
-
+        <StackPanel Margin="5,20,14,20" Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Button Content="Convert" Command="{Binding ConvertImagesCommand}" FontSize="15" Foreground="{Binding Source={StaticResource foreground}}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="BorderBrush" Value="{Binding Source={StaticResource fadedForeground}}"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}" Padding="10" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="{Binding Source={StaticResource foreground}}"/>
+                                <Setter Property="Background" Value="#19FFFFFF"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
+            <ProgressBar Height="20" />
+        </StackPanel>
     </Grid>
 </Window>
