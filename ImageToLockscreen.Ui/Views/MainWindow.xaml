@@ -166,7 +166,7 @@
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
-            <ProgressBar Margin="14,0,50,0" Height="20" />
+            <ProgressBar Margin="14,0,50,0" Height="20" Background="Transparent" />
         </StackPanel>
     </Grid>
 </Window>
