@@ -2,7 +2,9 @@
 using Microsoft.Win32;
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
 using ComboBox = System.Windows.Controls.ComboBox;
 
@@ -80,5 +82,17 @@ namespace ImageToLockscreen.Ui.Views
 
             vm.CurrentScreenResolution = new Size(rect.Width, rect.Height);
         }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            var hwndSource = (HwndSource)PresentationSource.FromVisual(this);
+            var handle = hwndSource.Handle;
+            if (DwmSetWindowAttribute(handle, 19, new[] { 1 }, 4) != 0)
+                DwmSetWindowAttribute(handle, 20, new[] { 1 }, 4);
+            base.OnSourceInitialized(e);
+        }
+
+        [DllImport("DwmApi")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, int[] attrValue, int attrSize);
     }
 }
