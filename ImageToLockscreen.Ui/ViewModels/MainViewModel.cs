@@ -15,7 +15,13 @@ namespace ImageToLockscreen.Ui.ViewModels
     {
         #region Private Members
         private static string _fileDialogTitle = "Please select image";
-        private readonly static string _fileBrowserFilter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|jpg files (*.jpg;*.jpeg)|*.jpg;*.jpeg|png files (*.png)|*.png";
+        private readonly static string _fileBrowserFilter = @"
+Images |*.jpg;*.jpeg;*.jiff;*.png;*.tiff;*.bmp|
+jpg files |*.jpg;*.jpeg;*.jiff|
+png files |*.png|
+tiff files |*.tiff|
+bitmap files |*.bmp|
+gif files |*.gif";
         private OpenFileDialog _fileBrowserDialog;
         private ObservableCollection<DisplayWithValue> _backgroundFillImageOptions = new ObservableCollection<DisplayWithValue>(new List<DisplayWithValue>()
         {
