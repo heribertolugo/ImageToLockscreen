@@ -1,4 +1,6 @@
-﻿namespace ImageToLockscreen.Ui.Core
+﻿using System;
+
+namespace ImageToLockscreen.Ui.Core
 {
     internal static class ArrayExtensions
     {
@@ -6,10 +8,8 @@
         {
             string[] newArray = new string[array.Length + arr.Length];
 
-            for (int i = 0; i < array.Length; i++)
-                newArray[i] = array[i];
-            for (int j = 0; j < arr.Length; j++)
-                newArray[array.Length + j] = arr[j];
+            Array.Copy(array, newArray, array.Length);
+            Array.Copy(arr, 0, newArray, array.Length, arr.Length);
             return newArray;
         }
     }
