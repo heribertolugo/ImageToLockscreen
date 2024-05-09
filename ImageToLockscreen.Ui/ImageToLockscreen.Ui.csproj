@@ -217,8 +217,12 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\MultiValueEqualityConverter.cs" />
     <Compile Include="Converters\TextInputToVisibilityConverter.cs" />
+    <Compile Include="Core\AllowedFileTypes.cs" />
+    <Compile Include="Core\ArrayExtensions.cs" />
+    <Compile Include="Core\ByteExtensionMethods.cs" />
     <Compile Include="Core\PropertyObservable.cs" />
     <Compile Include="Controls\SlideViewer.cs" />
+    <Compile Include="Models\ImageResizer.cs" />
     <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="ViewModels\DisplayWithValue.cs" />
     <Compile Include="Models\Ratio.cs" />
