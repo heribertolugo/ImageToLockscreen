@@ -24,6 +24,7 @@ This means the original image will not get distorted due to resizing. There are 
 ### Install
 This app was built using WPF. Meaning it is not a straight forward process to create a portable version.
 So the easiest and faster choice to make a release is to publish an installable version, which is what I did.
+Go into release from the "Code" tab. Choose a release, and under "Assets", click setup.zip under that release (or download the source and compile yourself).
 Unzip the files and then run the setup.exe.
 There is no sensible reason or requirement for this app to be installed, so at some point I might look into creating a portable.
 
@@ -39,10 +40,24 @@ The original images are never modifed, and it is up to you (_the user_) to decid
 _Fixed_ images will have any empty space filled in using an option of your choice.
 The image will be centered on the background.
 You can select a solid color as the background fill for the _fixed_ images, or an image.
-The image can either be an image of your choice, or the image which is being fixed.
+Sample:<br> <br>
+**Before**<br> 
+<img src="https://github.com/heribertolugo/ImageToLockscreen/assets/26213368/8dd6a79b-5f7f-4f9a-ac20-aec08a605225" width="200"/>
+<br><br>**After**<br> 
+<img src="https://github.com/heribertolugo/ImageToLockscreen/assets/26213368/31de0a92-0385-466e-9008-bc4d626b78c0" width="400"/>
+
+The background fill image can either be an image of your choice, or the image which is being fixed.
 When choosing an image as the background fill, the background fill image **WILL** be resized and distorted.
 An optional blur is provided when using an image for background fill. 
 The blur will prevent a chaotic looking output, as it allows the main image to retain focus (unless you want the chaotic output, of course).
+
+Sample:<br> <br>
+**Before**<br> 
+<img src="https://github.com/heribertolugo/ImageToLockscreen/assets/26213368/9e3fd176-9e30-4fb9-8d3a-785efc7a74cf" width="200"/>
+
+<br><br>**After**<br> 
+<img src="https://github.com/heribertolugo/ImageToLockscreen/assets/26213368/72e72de1-a3b0-495e-b1e0-27fe1f669523" width="400"/>
+
 
 #### Aspect Ratio
 By default the app tries to preselect the aspect ratio which matches your main monitor.
