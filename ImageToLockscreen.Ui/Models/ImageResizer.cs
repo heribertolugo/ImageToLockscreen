@@ -87,8 +87,10 @@ namespace ImageToLockscreen.Ui.Models
             {
                 encoder.Save(fileStream);
             }
+            encoder.Frames.Clear();
 
             this.ProgressReached(new ImageResizerEventAgs((int)(Interlocked.Increment(ref this._progress) / this.Total * 100), newFileName, true));
+            GC.WaitForPendingFinalizers();
             GC.Collect();
         }
         private void ProgressReached(ImageResizerEventAgs e)
