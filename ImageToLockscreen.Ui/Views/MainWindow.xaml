@@ -126,7 +126,7 @@
                                     <CheckBox Content="Blur" x:Name="blurImageOption" Grid.Column="1" Grid.Row="0" Background="{x:Null}" Foreground="White" 
                                               Margin="20,0,0,0" FontSize="20" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsBlurBackgroundImage}"/>
                                 </Grid>
-                                <control:ColorPicker Width="231" FontSize="25" Foreground="{Binding Source={StaticResource foreground}}" SelectedColor="{Binding BackgroundFillColor}"
+                                <control:ColorPicker Width="231" FontSize="25" Foreground="{Binding Source={StaticResource foreground}}" SelectedColor="{Binding BackgroundFillColor, Mode=TwoWay}"
                                                      Visibility="{Binding IsChecked, ElementName=backgroundFillSolidColorOption, Converter={StaticResource OutputImageOptionsConverter}}" 
                                                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
@@ -135,7 +135,7 @@
                     <GroupBox Header=" Aspect Ratio " Foreground="{Binding Source={StaticResource foreground}}" x:Name="aspectRatioGroup"
                               Grid.Column="0" Grid.Row="1" Margin="0,20,0,0" >
                         <control:SlideViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="aspectRatioSlide" Background="{Binding Source={StaticResource backgroundMed}}" 
-                                         Width="{Binding Width, ElementName=aspectRatioGroup}" Foreground="{StaticResource foreground}" Items="{Binding SlideViewerItems}" SelectedItem="{Binding SelectedAspectRatio}"/>
+                                         Width="{Binding Width, ElementName=aspectRatioGroup}" Foreground="{StaticResource foreground}" Items="{Binding SlideViewerItems}" SelectedItem="{Binding SelectedAspectRatio, Mode=TwoWay}"/>
                     </GroupBox>
                 </Grid>
             </DockPanel>
@@ -166,7 +166,7 @@
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
-            <ProgressBar Margin="14,0,50,0" Height="20" Background="Transparent" />
+            <ProgressBar Margin="14,0,50,0" Height="20" Background="Transparent" Value="{Binding ConversionProgress}" />
         </StackPanel>
     </Grid>
 </Window>
