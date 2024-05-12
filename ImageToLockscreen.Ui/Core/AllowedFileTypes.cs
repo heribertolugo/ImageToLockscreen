@@ -5,8 +5,12 @@ namespace ImageToLockscreen.Ui.Core
 {
     internal class AllowedFileTypes
     {
+        #region Private Members/Properties
         private static List<AllowedFileTypes> _all { get; set; } = new List<AllowedFileTypes>();
-        private static Dictionary<string, string[]> _fileExtensions = new Dictionary<string, string[]>();
+        private static readonly Dictionary<string, string[]> _fileExtensions = new Dictionary<string, string[]>();
+        #endregion Private Members/Properties
+
+        #region Public Enumish Values
         // BMP "BM"
         public static AllowedFileTypes Bitmap = new AllowedFileTypes(new byte[2] { 0x42, 0x4D }, new byte[0],
             new string[] { ".bmp" }, nameof(Bitmap));
@@ -27,9 +31,10 @@ namespace ImageToLockscreen.Ui.Core
             new string[] { ".tiff" }, "Tiff");
         // JPEG JFIF (SOI "\xFF\xD8" and half next marker xFF) (EOI "\xFF\xD9")
         public static AllowedFileTypes Jpeg = new AllowedFileTypes(new byte[3] { 0xFF, 0xD8, 0xFF }, new byte[2] { 0xFF, 0xD9 },
-            new string[] { ".jpg", ".jpeg" }, nameof(Jpeg));
+            new string[] { ".jpg", ".jpeg", ".jiff" }, nameof(Jpeg));
+        #endregion Public Enumish Values
 
-        private AllowedFileTypes(byte[] header, byte[] tail, string[] extensions, string displayName) 
+        private AllowedFileTypes(byte[] header, byte[] tail, string[] extensions, string displayName)
         { 
             this.Header = header;
             this.Tail = tail;
@@ -40,9 +45,8 @@ namespace ImageToLockscreen.Ui.Core
             AllowedFileTypes.MaxHeaderSize = Math.Max(AllowedFileTypes.MaxHeaderSize, header.Length);
             AllowedFileTypes.MaxTailSize = Math.Max(AllowedFileTypes.MaxTailSize, header.Length);
 
-            if (AllowedFileTypes.FileExtensions.ContainsKey(DisplayName))
-                AllowedFileTypes._fileExtensions[DisplayName] = AllowedFileTypes._fileExtensions[DisplayName].Merge(extensions);
-            else AllowedFileTypes._fileExtensions.Add(DisplayName, extensions);
+            if (!AllowedFileTypes.FileExtensions.ContainsKey(DisplayName))
+                AllowedFileTypes._fileExtensions.Add(DisplayName, extensions);
         }
 
         public byte[] Header { get; private set; }
@@ -53,6 +57,9 @@ namespace ImageToLockscreen.Ui.Core
         public static IEnumerable<AllowedFileTypes> All {  get => AllowedFileTypes._all; }
         public static int MaxHeaderSize {  get; private set; }
         public static int MaxTailSize { get; private set; }
+        /// <summary>
+        /// File type name | file extensions
+        /// </summary>
         public static IReadOnlyDictionary<string, string[]> FileExtensions {  get => AllowedFileTypes._fileExtensions; }
     }
 }
