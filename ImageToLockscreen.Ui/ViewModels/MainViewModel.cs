@@ -50,7 +50,6 @@ namespace ImageToLockscreen.Ui.ViewModels
 
             this.Worker.WorkerReportsProgress = true;
             this.Worker.DoWork += Worker_DoWork;
-            this.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             this.Worker.ProgressChanged += Worker_ProgressChanged;
         }
 
@@ -71,9 +70,14 @@ namespace ImageToLockscreen.Ui.ViewModels
             get { return base.GetProperty<DisplayWithValue>(); }
             set { base.SetProperty(value); }
         }
-        public bool IsSelectedBackgroundFillOptionUrl 
+        public string SelectedBackgroundFillOptionUrl
         {
-            get { return base.GetProperty<bool>(getDefault:() => false); }
+            get { return base.GetProperty<string>(getDefault: () => string.Empty); }
+            set { base.SetProperty(value); }
+        }
+        public bool IsSelectedBackgroundFillOptionUrl
+        {
+            get { return base.GetProperty<bool>(getDefault: () => false); }
             set { base.SetProperty(value); }
         }
         public bool IsBlurBackgroundImage
@@ -135,6 +139,18 @@ namespace ImageToLockscreen.Ui.ViewModels
             get { return base.GetProperty<int>(); }
             set { base.SetProperty(value); }
         }
+
+        public string ConversionProgressMessage
+        {
+            get { return base.GetProperty<string>(); }
+            set { base.SetProperty(value); }
+        }
+
+        public bool IsNotBusy
+        {
+            get { return base.GetProperty<bool>(getDefault: () => true); }
+            set { base.SetProperty(value); }
+        }
         #endregion Public Properties
 
 
@@ -145,58 +161,72 @@ namespace ImageToLockscreen.Ui.ViewModels
 
 
         #region Private ICommand
+        private bool BackgroundFillImageOptionSelectionChangedInternally = false;
         private void BackgroundFillImageOptionSelectionChanged()
         {
+            if (this.BackgroundFillImageOptionSelectionChangedInternally)
+                return;
             var option = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Url);
             
             if (this.SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Browse
                 && this.FileBrowserDialog.ShowDialog() == true)
             {
+                this.BackgroundFillImageOptionSelectionChangedInternally = true;
                 option.Display = System.IO.Path.GetFileName(this.FileBrowserDialog.FileName);
                 this.IsSelectedBackgroundFillOptionUrl = true;
+                this.SelectedBackgroundFillOptionUrl = this.FileBrowserDialog.FileName;
                 this.SelectedBackgroundFillOption = option;
                 this.SelectedBackgroundFillOption.IsVisible = true;
             }
             else
             {
+                this.BackgroundFillImageOptionSelectionChangedInternally = true;
                 this.IsSelectedBackgroundFillOptionUrl = false;
                 option.IsVisible = false;
                 option.Display = string.Empty;
                 this.SelectedBackgroundFillOption = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Self);
             }
+            this.BackgroundFillImageOptionSelectionChangedInternally = false;
         }
         private void ConvertImages()
         {
-            string bgImage = SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Self ? null : SelectedBackgroundFillOption.Display;
+            string bgImage = SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Self ? null : this.SelectedBackgroundFillOptionUrl;
             ImageResizerOptions options = this.IsBackgroundFillSolidColor ?
                 new ImageResizerOptions(this.InputDirectory, this.OutputDirectory, (this.SelectedAspectRatio.Value as AspectRatio).Ratio, this.BackgroundFillColor.Color) :
                 new ImageResizerOptions(this.InputDirectory, this.OutputDirectory, (this.SelectedAspectRatio.Value as AspectRatio).Ratio, bgImage, this.IsBlurBackgroundImage);
-
+            this.IsNotBusy = false;
             this.Worker.RunWorkerAsync(options);
         }
         #endregion Private ICommand
 
+        #region Worker Event Handlers
         private async void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             ImageResizer resizer = new ImageResizer();
 
+            this.ConversionProgress = 0;
+            this.ConversionProgressMessage = string.Empty;
+
             resizer.OnProgress += (s, v) =>
             {
-                Worker.ReportProgress(v.Progress);
+                Worker.ReportProgress(v.Progress, v.FileName);
             };
 
             await resizer.Resize((ImageResizerOptions)e.Argument);
         }
 
-        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            
-        }
-
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             this.ConversionProgress = e.ProgressPercentage;
+            this.ConversionProgressMessage = e.UserState as string;
+
+            if (this.ConversionProgress >= 100)
+            {
+                this.IsNotBusy = true;
+                this.ConversionProgressMessage = "done";
+            }
         }
+        #endregion Worker Event Handlers
 
         private void SetSlideViewerItemsRatios()
         {
