@@ -42,7 +42,7 @@ The original images are never modifed, and it is up to you (_the user_) to decid
 ### Image Output Options
 
 #### Background Fill
-_Fixed_ images will have any empty space filled in using an option of your choice.
+_"Fixed"_ (converted) images will have any empty space filled in using an option of your choice.
 The image will be centered on the background.
 You can select a solid color as the background fill for the _fixed_ images, or an image.
 Sample:<br> <br>
