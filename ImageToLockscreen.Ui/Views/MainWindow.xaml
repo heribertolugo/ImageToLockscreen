@@ -53,12 +53,12 @@
                         HorizontalAlignment="Stretch"
                         Foreground="{Binding Source={StaticResource foreground}}"
                         Background="{Binding Source={StaticResource backgroundMed}}" 
-                        HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25" Value="{Binding Path=InputDirectory, Mode=TwoWay}"/>
+                        HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25" Value="{Binding Path=InputDirectory, Mode=TwoWay}" IsEnabled="{Binding IsNotBusy}"/>
                     <control:DirectoryPathControl Hint="Browse or type ouput directory path" FolderDialogTitle="Select output directory" Margin="20,10,20,10" 
                         HorizontalAlignment="Stretch"
                         Foreground="{Binding Source={StaticResource foreground}}"
                         Background="{Binding Source={StaticResource backgroundMed}}" 
-                        HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25" Value="{Binding Path=OutputDirectory, Mode=TwoWay}"/>
+                        HintColor="{Binding Source={StaticResource fadedForeground}}" Height="25" Value="{Binding Path=OutputDirectory, Mode=TwoWay}" IsEnabled="{Binding IsNotBusy}"/>
                 </StackPanel>
             </DockPanel>
         </control:Card>
@@ -81,9 +81,9 @@
                         <DockPanel LastChildFill="True" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                             <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
                                 <RadioButton GroupName="outputOptions" Content="Solid Color" Foreground="{Binding Source={StaticResource foreground}}" Margin="20,10,0,10" 
-                                             Name="backgroundFillSolidColorOption" IsChecked="{Binding IsBackgroundFillSolidColor}"/>
+                                             Name="backgroundFillSolidColorOption" IsChecked="{Binding IsBackgroundFillSolidColor}" IsEnabled="{Binding IsNotBusy}"/>
                                 <RadioButton GroupName="outputOptions" Content="Image" Foreground="{Binding Source={StaticResource foreground}}" Margin="20,10,0,10" 
-                                             Name="backgroundFillImageOption"/>
+                                             Name="backgroundFillImageOption" IsEnabled="{Binding IsNotBusy}"/>
                             </StackPanel>
                             <Grid DockPanel.Dock="Top" UseLayoutRounding="True">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Name="backgroundFillImageOptionsGrid" 
@@ -99,7 +99,7 @@
                                     <ComboBox SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="0"
                                               Name="backgroundFillImageOptionSource" IsEditable="True" IsReadOnly="True" MinWidth="185" 
                                               MaxWidth="{Binding Width, ElementName=backgroundFillImageOptionsGrid}" ItemsSource="{Binding BackgroundFillImageOptions}"
-                                              DisplayMemberPath="Display" SelectedValuePath="Value" SelectedItem="{Binding Path=SelectedBackgroundFillOption, Mode=TwoWay}">
+                                              DisplayMemberPath="Display" SelectedValuePath="Value" SelectedItem="{Binding Path=SelectedBackgroundFillOption, Mode=TwoWay}" IsEnabled="{Binding IsNotBusy}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="SelectionChanged">
                                                 <i:InvokeCommandAction Command="{Binding BackgroundFillImageOptionSelectionChangedCommand}"/>
@@ -124,24 +124,25 @@
                                     </ComboBox>
 
                                     <CheckBox Content="Blur" x:Name="blurImageOption" Grid.Column="1" Grid.Row="0" Background="{x:Null}" Foreground="White" 
-                                              Margin="20,0,0,0" FontSize="20" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsBlurBackgroundImage}"/>
+                                              Margin="20,0,0,0" FontSize="20" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsBlurBackgroundImage}" IsEnabled="{Binding IsNotBusy}"/>
                                 </Grid>
                                 <control:ColorPicker Width="231" FontSize="25" Foreground="{Binding Source={StaticResource foreground}}" SelectedColor="{Binding BackgroundFillColor, Mode=TwoWay}"
                                                      Visibility="{Binding IsChecked, ElementName=backgroundFillSolidColorOption, Converter={StaticResource OutputImageOptionsConverter}}" 
-                                                     VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                     VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="{Binding IsNotBusy}"/>
                             </Grid>
                         </DockPanel>
                     </GroupBox>
                     <GroupBox Header=" Aspect Ratio " Foreground="{Binding Source={StaticResource foreground}}" x:Name="aspectRatioGroup"
                               Grid.Column="0" Grid.Row="1" Margin="0,20,0,0" >
                         <control:SlideViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="aspectRatioSlide" Background="{Binding Source={StaticResource backgroundMed}}" 
-                                         Width="{Binding Width, ElementName=aspectRatioGroup}" Foreground="{StaticResource foreground}" Items="{Binding SlideViewerItems}" SelectedItem="{Binding SelectedAspectRatio, Mode=TwoWay}"/>
+                                         Width="{Binding Width, ElementName=aspectRatioGroup}" Foreground="{StaticResource foreground}" Items="{Binding SlideViewerItems}" SelectedItem="{Binding SelectedAspectRatio, Mode=TwoWay}" 
+                                         IsEnabled="{Binding IsNotBusy}"/>
                     </GroupBox>
                 </Grid>
             </DockPanel>
         </control:Card>
         <StackPanel Margin="5,20,14,20" Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-            <Button Content="Convert" Command="{Binding ConvertImagesCommand}" FontSize="15" Foreground="{Binding Source={StaticResource foreground}}">
+            <Button Content="Convert" Command="{Binding ConvertImagesCommand}" FontSize="15" Foreground="{Binding Source={StaticResource foreground}}" IsEnabled="{Binding IsNotBusy}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="BorderBrush" Value="{Binding Source={StaticResource fadedForeground}}"/>
@@ -167,6 +168,7 @@
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
             <ProgressBar Margin="14,0,50,0" Height="20" Background="Transparent" Value="{Binding ConversionProgress}" />
+            <Label Margin="14,0,0,0" Foreground="{Binding Source={StaticResource foreground}}" Content="{Binding ConversionProgressMessage}"/>
         </StackPanel>
     </Grid>
 </Window>
