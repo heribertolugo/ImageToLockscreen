@@ -40,18 +40,8 @@ namespace ImageToLockscreen.Ui.Models
         /// <param name="canExecute">The execution status logic.</param>
         public RelayCommand(Action<T> execute, Predicate<object> canExecute)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException("canExecute");
-            }
-
-            this.execute = execute;
-            this.canExecute = canExecute;
+            this.execute = execute ?? throw new ArgumentNullException("execute");
+            this.canExecute = canExecute ?? throw new ArgumentNullException("canExecute");
         }
 
         #endregion Constructors
@@ -113,11 +103,7 @@ namespace ImageToLockscreen.Ui.Models
         public void OnCanExecuteChanged()
         {
             EventHandler handler = this.CanExecuteChangedInternal;
-            if (handler != null)
-            {
-                //DispatcherHelper.BeginInvokeOnUIThread(() => handler.Invoke(this, EventArgs.Empty));
-                handler.Invoke(this, EventArgs.Empty);
-            }
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -175,18 +161,8 @@ namespace ImageToLockscreen.Ui.Models
         /// <param name="canExecute">The execution status logic.</param>
         public RelayCommand(Action execute, Predicate<object> canExecute)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException("canExecute");
-            }
-
-            this._execute = execute;
-            this._canExecute = canExecute;
+            this._execute = execute ?? throw new ArgumentNullException("execute");
+            this._canExecute = canExecute ?? throw new ArgumentNullException("canExecute");
         }
 
         #endregion Constructors
@@ -248,11 +224,7 @@ namespace ImageToLockscreen.Ui.Models
         public void OnCanExecuteChanged()
         {
             EventHandler handler = this.CanExecuteChangedInternal;
-            if (handler != null)
-            {
-                //DispatcherHelper.BeginInvokeOnUIThread(() => handler.Invoke(this, EventArgs.Empty));
-                handler.Invoke(this, EventArgs.Empty);
-            }
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
