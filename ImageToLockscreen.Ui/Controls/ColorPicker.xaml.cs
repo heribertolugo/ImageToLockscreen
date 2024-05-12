@@ -18,7 +18,8 @@ namespace ImageToLockscreen.Ui.Controls
 
         public static void SelectedColorChangedHandler(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            ((ColorPicker)sender).SelectedColor = e.NewValue as SolidColorBrush;
+            if (((ColorPicker)sender).SelectedColor != e.NewValue as SolidColorBrush)
+                ((ColorPicker)sender).SelectedColor = e.NewValue as SolidColorBrush;
         }
 
         public ColorPicker()
@@ -29,17 +30,17 @@ namespace ImageToLockscreen.Ui.Controls
 
         public SolidColorBrush SelectedColor
         {
-            get => (GetValue(SelectedColorProperty) as SolidColorBrush) ?? new SolidColorBrush(Colors.Green);
+            get => (base.GetValue(ColorPicker.SelectedColorProperty) as SolidColorBrush) ?? new SolidColorBrush(Colors.Black);
             set
             {
-                SetValue(SelectedColorProperty, value);
+                base.SetValue(ColorPicker.SelectedColorProperty, value);
                 this.selectedColorUi.Background = value;
             }
         }
         public SolidColorBrush PreviousColor
         {
-            get => (SolidColorBrush)GetValue(PreviousColorProperty);
-            set => SetValue(PreviousColorProperty, value);
+            get => (SolidColorBrush)base.GetValue(ColorPicker.PreviousColorProperty);
+            set => base.SetValue(ColorPicker.PreviousColorProperty, value);
         }
 
         private void ThisControl_MouseUp(object sender, MouseButtonEventArgs e)
