@@ -1,3 +1,12 @@
+<!--
+  Title: ImageToLockscreen
+  Description: Make images fit correctly on Windows lock screen.
+  Author: Heriberto Lugo
+  -->
+  <meta name='keywords' content='How to custom-fit your images for the lock screen, set the lock screen wallpaper to fit, get a picture to fit the lockscreen, How to make pic fit the lock screen, How To Make Desktop Background Fit To Screen Windows 10, Lock screen Wallpaper zoomed in how do I fix it?'>
+  <meta name="description" content="Make images fit correctly on Windows lock screen">
+  <meta name="author" content="Heriberto Lugo">
+
 # ImageToLockscreen
 
 **[Currently in Beta. 5/12/2024]**
