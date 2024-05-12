@@ -4,9 +4,9 @@ namespace ImageToLockscreen.Ui.Core
 {
     internal static class ArrayExtensions
     {
-        public static string[] Merge(this string[] array, string[] arr)
+        public static T[] Merge<T>(this T[] array, T[] arr)
         {
-            string[] newArray = new string[array.Length + arr.Length];
+            T[] newArray = new T[array.Length + arr.Length];
 
             Array.Copy(array, newArray, array.Length);
             Array.Copy(arr, 0, newArray, array.Length, arr.Length);
