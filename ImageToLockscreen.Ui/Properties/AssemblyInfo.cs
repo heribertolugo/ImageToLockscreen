@@ -8,9 +8,9 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ImageToLockscreen.Ui")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Fixes image ratio so that they do not get resized when using to display in Windows lockscreen")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Heriberto Lugo")]
 [assembly: AssemblyProduct("ImageToLockscreen.Ui")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]
