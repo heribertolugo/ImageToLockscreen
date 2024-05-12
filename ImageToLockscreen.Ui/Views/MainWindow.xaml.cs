@@ -12,7 +12,7 @@ namespace ImageToLockscreen.Ui.Views
 {
     public partial class MainWindow : Window
     {
-        private DpiScale _dpiInfo;
+        public static DpiScale DpiInfo { get; private set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -37,12 +37,12 @@ namespace ImageToLockscreen.Ui.Views
 
         private Size MeasureString(string candidate, Typeface typeface, double fontSize)
         {
-            if (default(DpiScale).Equals(this._dpiInfo))
+            if (default(DpiScale).Equals(MainWindow.DpiInfo))
                 throw new InvalidOperationException("Window must be loaded before calling MeasureString");
 
             var formattedText = new FormattedText(
-                candidate, CultureInfo.CurrentUICulture, System.Windows.FlowDirection.LeftToRight,
-                typeface, fontSize, Brushes.Black, this._dpiInfo.PixelsPerDip);
+                candidate, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+                typeface, fontSize, Brushes.Black, MainWindow.DpiInfo.PixelsPerDip);
 
             return new Size(formattedText.Width, formattedText.Height);
         }
@@ -52,16 +52,16 @@ namespace ImageToLockscreen.Ui.Views
             this.SetRatioOnViewModel(this.GetCurrentScreenWorkArea(this));
         }
 
-        public Rect GetCurrentScreenWorkArea(System.Windows.Window window)
+        public Rect GetCurrentScreenWorkArea(Window window)
         {
             // see: https://stackoverflow.com/a/65999556/6368401
-            this._dpiInfo = VisualTreeHelper.GetDpi(window);
+            MainWindow.DpiInfo = VisualTreeHelper.GetDpi(window);
             //var screen = Screen.FromPoint(new System.Drawing.Point((int)window.Left, (int)window.Top));
 
             //return new Rect { Width = screen.WorkingArea.Width / this._dpiInfo.DpiScaleX, Height = screen.WorkingArea.Height / this._dpiInfo.DpiScaleY };
 
-            return new Rect { Width = System.Windows.SystemParameters.PrimaryScreenWidth / this._dpiInfo.DpiScaleX, 
-                Height = System.Windows.SystemParameters.PrimaryScreenHeight / this._dpiInfo.DpiScaleY };
+            return new Rect { Width = SystemParameters.PrimaryScreenWidth / MainWindow.DpiInfo.DpiScaleX, 
+                Height = SystemParameters.PrimaryScreenHeight / MainWindow.DpiInfo.DpiScaleY };
         }
 
         protected override void OnDpiChanged(DpiScale oldDpiScaleInfo, DpiScale newDpiScaleInfo)
