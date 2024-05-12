@@ -21,6 +21,12 @@ This means the original image will not get distorted due to resizing. There are 
 
 ## Usage
 
+### Install
+This app was built using WPF. Meaning it is not a straight forward process to create a portable version.
+So the easiest and faster choice to make a release is to publish an installable version, which is what I did.
+Unzip the files and then run the setup.exe.
+There is no sensible reason or requirement for this app to be installed, so at some point I might look into creating a portable.
+
 ### Image Directories
 The app does not allow choosing files. 
 Instead you must choose the folder which contains the images you would like to fix (**input directory**),
