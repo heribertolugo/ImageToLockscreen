@@ -22,11 +22,16 @@ This means the original image will not get distorted due to resizing. There are 
 ## Usage
 
 ### Install
-This app was built using WPF. Meaning it is not a straight forward process to create a portable version.
-So the easiest and faster choice to make a release is to publish an installable version, which is what I did.
-Go into release from the "Code" tab. Choose a release, and under "Assets", click setup.zip under that release (or download the source and compile yourself).
+This app was built using WPF, __.NET 4.8__. You can choose the installer version, or try the portable version, or download the code and compile yourself.
+#### Release
+1. Go into release from the "Code" tab. Choose a release, and under "Assets", click setup.zip under that release.
 Unzip the files and then run the setup.exe.
-There is no sensible reason or requirement for this app to be installed, so at some point I might look into creating a portable.
+#### Portable
+2. Go into release from the "Code" tab. Choose a release, and under "Assets", click ImageToLockscreen_Portable.zip under that release.
+Open ImageToLockscreen.Ui.exe to run the app.
+#### Source
+3. Go into release from the "Code" tab. Choose a release, and under "Assets", click "_Source code(zip)_" or "_Source code(tar.gz)_" under that release.
+Open with __Visual Studio__, and build.
 
 ### Image Directories
 The app does not allow choosing files. 
