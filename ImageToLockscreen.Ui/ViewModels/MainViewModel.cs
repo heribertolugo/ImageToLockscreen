@@ -1,8 +1,10 @@
 ﻿using ImageToLockscreen.Ui.Controls;
 using ImageToLockscreen.Ui.Core;
 using ImageToLockscreen.Ui.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -13,37 +15,43 @@ namespace ImageToLockscreen.Ui.ViewModels
 {
     public class MainViewModel : PropertyObservable
     {
-        #region Private Members
-        private static string _fileDialogTitle = "Please select image";
-        private readonly static string _fileBrowserFilter = @"
-Images |*.jpg;*.jpeg;*.jiff;*.png;*.tiff;*.bmp|
-jpg files |*.jpg;*.jpeg;*.jiff|
-png files |*.png|
-tiff files |*.tiff|
-bitmap files |*.bmp|
-gif files |*.gif";
-        private OpenFileDialog _fileBrowserDialog;
+        #region Private Members/Properties
+        private static string FileDialogTitle { get; set; } = "Please select image";
+        private static string FileBrowserFilter { get; set; }
+        private OpenFileDialog FileBrowserDialog { get; set; }
         private ObservableCollection<DisplayWithValue> _backgroundFillImageOptions = new ObservableCollection<DisplayWithValue>(new List<DisplayWithValue>()
         {
             new DisplayWithValue("Self", BackgroundFillImageOption.Self, true),
             new DisplayWithValue("Browse", BackgroundFillImageOption.Browse, true),
             new DisplayWithValue("", BackgroundFillImageOption.Url, false)
         });
-        #endregion Private Members
+        private BackgroundWorker Worker { get; } = new BackgroundWorker();
+        #endregion Private Members/Properties
 
+        static MainViewModel()
+        {
+            FileBrowserFilter = $"Images |{string.Join(";", AllowedFileTypes.FileExtensions.Values.SelectMany(k => k.Select(v => $"*{v}")))}|";
+            FileBrowserFilter += string.Join("|", AllowedFileTypes.FileExtensions.Select(f => $"{f.Key} files |{string.Join(";",f.Value.Select(k => $"*{k}"))}"));
+        }
 
         public MainViewModel()
         {
-            this._fileBrowserDialog = new OpenFileDialog()
+            this.FileBrowserDialog = new OpenFileDialog()
             {
                 Multiselect = false,
-                Title = MainViewModel._fileDialogTitle,
-                Filter = MainViewModel._fileBrowserFilter
+                Title = MainViewModel.FileDialogTitle,
+                Filter = MainViewModel.FileBrowserFilter
             };
-            this.SetRatios();
+            this.SetSlideViewerItemsRatios();
 
             this.BackgroundFillImageOptionSelectionChangedCommand = new RelayCommand(BackgroundFillImageOptionSelectionChanged);
             this.ConvertImagesCommand = new RelayCommand(this.ConvertImages);
+            this.BackgroundFillColor = new SolidColorBrush(Colors.Black);
+
+            this.Worker.WorkerReportsProgress = true;
+            this.Worker.DoWork += Worker_DoWork;
+            this.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+            this.Worker.ProgressChanged += Worker_ProgressChanged;
         }
 
 
@@ -80,7 +88,7 @@ gif files |*.gif";
         }
         public SolidColorBrush BackgroundFillColor
         {
-            get { return base.GetProperty<SolidColorBrush>(getDefault: () => Brushes.Black); }
+            get { return base.GetProperty<SolidColorBrush>(); }
             set { base.SetProperty(value); }
         }
 
@@ -121,6 +129,12 @@ gif files |*.gif";
             get { return base.GetProperty<ObservableCollection<SlideViewerItem>>(getDefault: () => { return new ObservableCollection<SlideViewerItem>(); }); }
             set { base.SetProperty(value); }
         }
+
+        public int ConversionProgress
+        {
+            get { return base.GetProperty<int>(); }
+            set { base.SetProperty(value); }
+        }
         #endregion Public Properties
 
 
@@ -136,9 +150,9 @@ gif files |*.gif";
             var option = this._backgroundFillImageOptions.First(o => o.Value == BackgroundFillImageOption.Url);
             
             if (this.SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Browse
-                && this._fileBrowserDialog.ShowDialog() == true)
+                && this.FileBrowserDialog.ShowDialog() == true)
             {
-                option.Display = System.IO.Path.GetFileName(this._fileBrowserDialog.FileName);
+                option.Display = System.IO.Path.GetFileName(this.FileBrowserDialog.FileName);
                 this.IsSelectedBackgroundFillOptionUrl = true;
                 this.SelectedBackgroundFillOption = option;
                 this.SelectedBackgroundFillOption.IsVisible = true;
@@ -153,16 +167,42 @@ gif files |*.gif";
         }
         private void ConvertImages()
         {
-            System.Console.WriteLine("Converting images");
+            string bgImage = SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Self ? null : SelectedBackgroundFillOption.Display;
+            ImageResizerOptions options = this.IsBackgroundFillSolidColor ?
+                new ImageResizerOptions(this.InputDirectory, this.OutputDirectory, (this.SelectedAspectRatio.Value as AspectRatio).Ratio, this.BackgroundFillColor.Color) :
+                new ImageResizerOptions(this.InputDirectory, this.OutputDirectory, (this.SelectedAspectRatio.Value as AspectRatio).Ratio, bgImage, this.IsBlurBackgroundImage);
+
+            this.Worker.RunWorkerAsync(options);
         }
         #endregion Private ICommand
 
+        private async void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ImageResizer resizer = new ImageResizer();
 
-        private void SetRatios()
+            resizer.OnProgress += (s, v) =>
+            {
+                Worker.ReportProgress(v.Progress);
+            };
+
+            await resizer.Resize((ImageResizerOptions)e.Argument);
+        }
+
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            
+        }
+
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            this.ConversionProgress = e.ProgressPercentage;
+        }
+
+        private void SetSlideViewerItemsRatios()
         {
             foreach (var ratio in CommonAspectRatios.CommonRatios)
             {
-                SlideViewerItem aspectRatioItem = new Controls.SlideViewerItem()
+                SlideViewerItem aspectRatioItem = new SlideViewerItem()
                 {
                     Value = ratio,
                     Text = $"{ratio.Description} ({ratio})",
@@ -171,7 +211,7 @@ gif files |*.gif";
                 };
                 this.SlideViewerItems.Add(aspectRatioItem);
 
-                if (ratio.Resolutions.Any(r => r == this.CurrentScreenResolution || (ratio.Height / ratio.Width) == (r.Height / r.Width)))
+                if (ratio.Resolutions.Any(r => r == this.CurrentScreenResolution || Math.Round(ratio.Height / ratio.Width, 1) == Math.Round(r.Height / r.Width, 1)))
                     this.SelectedAspectRatio = aspectRatioItem;
             }
         }
