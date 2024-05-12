@@ -423,12 +423,12 @@ namespace ImageToLockscreen.Ui.Core
         /// <remarks>credit <see href="https://stackoverflow.com/a/6775114/6368401">Daniel Wolf</see></remarks>
         public static BitmapSource BitmapToImagesource(Bitmap bitmap)
         {
+            BitmapImage result = new BitmapImage();
             using (MemoryStream stream = new MemoryStream())
             {
                 bitmap.Save(stream, ImageFormat.Png);
 
                 stream.Position = 0;
-                BitmapImage result = new BitmapImage();
                 result.BeginInit();
                 // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
                 // Force the bitmap to load right now so we can dispose the stream.
@@ -436,8 +436,11 @@ namespace ImageToLockscreen.Ui.Core
                 result.StreamSource = stream;
                 result.EndInit();
                 result.Freeze();
-                return result;
             }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            return result;
         }
     }
 }
