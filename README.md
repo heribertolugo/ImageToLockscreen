@@ -1,6 +1,6 @@
 # ImageToLockscreen
 
-**[Still in Development. No Release yet as of 5/10.2024]**
+**[Currently in Beta. 5/12/2024]**
 
 Resize images to fit Windows lockscreen. This tool will attempt to resize the canvas while preserving the actual image size, but will resize the image as a last attempt.
 
