@@ -1,446 +1,105 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace ImageToLockscreen.Ui.Core
 {
-    /// <summary>
-    /// credit <see href="https://www.codeproject.com/Tips/5359189/Very-Fast-Image-Blur-in-Csharp-using-Direct-Bit">pdoxtader</see>
-    /// </summary>
     internal class ImageHelper
     {
-        public class ExposedBitmap
+        public static WriteableBitmap Blur(BitmapSource sourceImage, int blurSize)
         {
-            public PinnedByteArray pinnedArray;
-            public Bitmap exBitmap;
+            int bytesPerPixel = (sourceImage.Format.BitsPerPixel + 7) / 8;
+            int stride = GetStride(sourceImage.PixelWidth, bytesPerPixel);
+            byte[] data = new byte[stride * sourceImage.PixelHeight];
 
-            public readonly PixelFormat pixelFormat;
-            public readonly int bytesPerPixel;
-            public readonly int stride;
-            public readonly int Height;
-            public readonly int Width;
+            sourceImage.CopyPixels(data, stride, 0);
 
-            private int horizontalCoords = -1;
-            private int verticalCoords = -1;
-            private int horizontalLoc = 0;
-            private int verticalLoc = 0;
-            private int location = 0;
+            WriteableBitmap writableImage = new WriteableBitmap(
+                sourceImage.PixelWidth,
+                sourceImage.PixelHeight,
+                sourceImage.DpiX,
+                sourceImage.DpiY,
+                sourceImage.Format,
+                null);
 
-            public void GetPixel(int x, int y, out byte red, out byte green, out byte blue)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    blue = pinnedArray.bytes[location];
-                    green = pinnedArray.bytes[location + 1];
-                    red = pinnedArray.bytes[location + 2];
-                    return;
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
+            writableImage.WritePixels(
+                new Int32Rect(0, 0, sourceImage.PixelWidth, sourceImage.PixelHeight),
+                data,
+                stride,
+                0);
 
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                blue = pinnedArray.bytes[location];
-                green = pinnedArray.bytes[location + 1];
-                red = pinnedArray.bytes[location + 2];
-            }
-
-            public void SetPixel(int x, int y, byte red, byte green, byte blue)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    pinnedArray.bytes[location] = blue;
-                    pinnedArray.bytes[location + 1] = green;
-                    pinnedArray.bytes[location + 2] = red;
-                    return;
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                pinnedArray.bytes[location] = blue;
-                pinnedArray.bytes[location + 1] = green;
-                pinnedArray.bytes[location + 2] = red;
-            }
-
-            public byte GetRed(int x, int y)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    return pinnedArray.bytes[location + 2];
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                return pinnedArray.bytes[location + 2];
-            }
-
-            public byte GetGreen(int x, int y)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    return pinnedArray.bytes[location + 1];
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                return pinnedArray.bytes[location + 1];
-            }
-
-            public byte GetBlue(int x, int y)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    return pinnedArray.bytes[location];
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                return pinnedArray.bytes[location];
-            }
-
-            public void SetRed(int x, int y, Byte byt)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    pinnedArray.bytes[location + 2] = byt;
-                    return;
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                pinnedArray.bytes[location + 2] = byt;
-            }
-
-            public void SetGreen(int x, int y, Byte byt)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    pinnedArray.bytes[location + 1] = byt;
-                    return;
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                pinnedArray.bytes[location + 1] = byt;
-            }
-
-            public void SetBlue(int x, int y, Byte byt)
-            {
-                if (x == horizontalCoords && y == verticalCoords)
-                {
-                    pinnedArray.bytes[location] = byt;
-                    return;
-                }
-                else
-                {
-                    if (x != horizontalCoords)
-                    {
-                        horizontalCoords = x;
-                        horizontalLoc = horizontalCoords * bytesPerPixel;
-                    }
-
-                    if (y != verticalCoords)
-                    {
-                        verticalCoords = y;
-                        verticalLoc = verticalCoords * stride;
-                    }
-
-                    location = verticalLoc + horizontalLoc;
-                }
-
-                pinnedArray.bytes[location] = byt;
-            }
-
-            public class PinnedByteArray
-            {
-                public byte[] bytes;
-                internal GCHandle handle;
-                internal IntPtr ptr;
-                private int referenceCount;
-                private bool destroyed;
-
-                public PinnedByteArray(int length)
-                {
-                    bytes = new byte[length];
-                    handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-                    ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-                    referenceCount++;
-                }
-
-                internal void AddReference()
-                {
-                    referenceCount++;
-                }
-
-                internal void ReleaseReference()
-                {
-                    referenceCount--;
-                    if (referenceCount <= 0) Destroy();
-                }
-
-                private void Destroy()
-                {
-                    if (!destroyed)
-                    {
-                        handle.Free();
-                        bytes = null;
-                        destroyed = true;
-                    }
-                }
-
-                ~PinnedByteArray()
-                {
-                    Destroy();
-                }
-            }
-
-            public ExposedBitmap(ref Bitmap sourceBmp)
-            {
-                // Get the basic info from sourceBmp and store it locally (improves performance)
-                Height = sourceBmp.Height;
-                Width = sourceBmp.Width;
-                pixelFormat = sourceBmp.PixelFormat;
-
-                // Create exBitmap, associating it with our pinned array so we can access the bitmap bits directly:
-                bytesPerPixel = Image.GetPixelFormatSize(pixelFormat) / 8;
-                stride = GetStride(Width, bytesPerPixel);
-                pinnedArray = new PinnedByteArray(stride * Height);
-                exBitmap = new Bitmap(Width, Height, stride, pixelFormat, pinnedArray.ptr);
-
-                // Copy the image from sourceBmp to exBitmap:
-                Graphics g = Graphics.FromImage(exBitmap);
-                g.DrawImage(sourceBmp, 0, 0, Width, Height);
-                g.Dispose();
-            }
+            return Blur(writableImage, blurSize);
         }
 
-        public static void Blur(ref Bitmap image)
+        public static WriteableBitmap Blur(WriteableBitmap sourceImage, int blurSize)
         {
-            Blur(ref image, new Rectangle(0, 0, image.Width, image.Height), 2);
-        }
+            int pixelWidth = sourceImage.PixelWidth;
+            int pixelHeight = sourceImage.PixelHeight;
+            int bytesPerPixel = (sourceImage.Format.BitsPerPixel + 7) / 8;
+            int stride = GetStride(pixelWidth, bytesPerPixel);
+            byte[] pixelData = new byte[stride * pixelHeight];
 
-        public static void Blur(ref Bitmap image, Int32 blurSize)
-        {
-            Blur(ref image, new Rectangle(0, 0, image.Width, image.Height), blurSize);
-        }
+            sourceImage.CopyPixels(pixelData, stride, 0);
 
-        private static void Blur(ref Bitmap image, Rectangle rectangle, Int32 blurSize)
-        {
-            ExposedBitmap blurred = new ExposedBitmap(ref image);
+            WriteableBitmap blurredImage = new WriteableBitmap(sourceImage);
 
-            // Store height & width locally (improives performance)
-            int height = blurred.Height;
-            int width = blurred.Width;
+            blurredImage.Lock();
 
-            for (int xx = rectangle.X; xx < rectangle.X + rectangle.Width; xx++)
+            Parallel.For(0, pixelHeight, y =>
             {
-                for (int yy = rectangle.Y; yy < rectangle.Y + rectangle.Height; yy++)
+                for (int x = 0; x < pixelWidth; x++)
                 {
-                    //byte red, green, blue;
                     int avgR = 0, avgG = 0, avgB = 0;
                     int blurPixelCount = 0;
-                    int horizontalLocation;
-                    int verticalLocation;
-                    int pixelPointer;
 
-                    // Average the color of the red, green and blue for each pixel in the
-                    // blur size while making sure you don't go outside the image bounds:
-                    for (int x = xx; (x < xx + blurSize && x < width); x++)
+                    // Calculate the range for the blur
+                    int xStart = Math.Max(x - blurSize / 2, 0);
+                    int xEnd = Math.Min(x + blurSize / 2, pixelWidth - 1);
+                    int yStart = Math.Max(y - blurSize / 2, 0);
+                    int yEnd = Math.Min(y + blurSize / 2, pixelHeight - 1);
+
+                    // Average the color of the red, green and blue for each pixel in the blur size
+                    for (int xx = xStart; xx <= xEnd; xx++)
                     {
-                        horizontalLocation = x * blurred.bytesPerPixel;
-                        for (int y = yy; (y < yy + blurSize && y < height); y++)
+                        for (int yy = yStart; yy <= yEnd; yy++)
                         {
-                            verticalLocation = y * blurred.stride;
-                            pixelPointer = verticalLocation + horizontalLocation;
-
-                            avgB += blurred.pinnedArray.bytes[pixelPointer];
-                            avgG += blurred.pinnedArray.bytes[pixelPointer + 1];
-                            avgR += blurred.pinnedArray.bytes[pixelPointer + 2];
-
+                            int pixelIndex = yy * stride + xx * bytesPerPixel;
+                            avgB += pixelData[pixelIndex];
+                            avgG += pixelData[pixelIndex + 1];
+                            avgR += pixelData[pixelIndex + 2];
                             blurPixelCount++;
                         }
                     }
 
-                    byte bavgr = (byte)(avgR / blurPixelCount);
-                    byte bavgg = (byte)(avgG / blurPixelCount);
-                    byte bavgb = (byte)(avgB / blurPixelCount);
+                    avgR /= blurPixelCount;
+                    avgG /= blurPixelCount;
+                    avgB /= blurPixelCount;
 
-                    // Now that we know the average for the blur size, set each pixel to that color
-                    for (int x = xx; x < xx + blurSize && x < width && x < rectangle.Width; x++)
-                    {
-                        horizontalLocation = x * blurred.bytesPerPixel;
-                        for (int y = yy; y < yy + blurSize && y < height && y < rectangle.Height; y++)
-                        {
-                            verticalLocation = y * blurred.stride;
-                            pixelPointer = verticalLocation + horizontalLocation;
-
-                            blurred.pinnedArray.bytes[pixelPointer] = bavgb;
-                            blurred.pinnedArray.bytes[pixelPointer + 1] = bavgg;
-                            blurred.pinnedArray.bytes[pixelPointer + 2] = bavgr;
-                        }
-                    }
+                    // Set the color of the pixel to the average color
+                    int baseIndex = y * stride + x * bytesPerPixel;
+                    pixelData[baseIndex] = (byte)avgB;
+                    pixelData[baseIndex + 1] = (byte)avgG;
+                    pixelData[baseIndex + 2] = (byte)avgR;
+                    // Assuming the alpha channel should be set to 255
+                    pixelData[baseIndex + 3] = 255;
                 }
-            }
+            });
 
-            image = blurred.exBitmap;
+            // Write the modified pixel data back to the WriteableBitmap
+            blurredImage.WritePixels(new Int32Rect(0, 0, pixelWidth, pixelHeight), pixelData, stride, 0);
+
+            blurredImage.Unlock();
+            return blurredImage;
         }
 
         public static int GetStride(int width, int bytesPerPixel)
         {
             int stride = width * bytesPerPixel;
-
             // Correct for the 4 byte boundary requirement:
             stride += stride % 4 == 0 ? 0 : 4 - (stride % 4);
 
             return stride;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bitmapsource"></param>
-        /// <returns></returns>
-        /// <remarks>credit <see href="https://stackoverflow.com/a/6775114/6368401">Daniel Wolf</see></remarks>
-        public static Bitmap BitmapSourceToBitmap(BitmapSource bitmapsource)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BitmapEncoder enc = new PngBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(bitmapsource));
-                enc.Save(stream);
-
-                using (var tempBitmap = new Bitmap(stream))
-                {
-                    // According to MSDN, one "must keep the stream open for the lifetime of the Bitmap."
-                    // So we return a copy of the new bitmap, allowing us to dispose both the bitmap and the stream.
-                    return new Bitmap(tempBitmap);
-                }
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bitmap"></param>
-        /// <returns></returns>
-        /// <remarks>credit <see href="https://stackoverflow.com/a/6775114/6368401">Daniel Wolf</see></remarks>
-        public static BitmapSource BitmapToImagesource(Bitmap bitmap)
-        {
-            BitmapImage result = new BitmapImage();
-            using (MemoryStream stream = new MemoryStream())
-            {
-                bitmap.Save(stream, ImageFormat.Png);
-
-                stream.Position = 0;
-                result.BeginInit();
-                // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
-                // Force the bitmap to load right now so we can dispose the stream.
-                result.CacheOption = BitmapCacheOption.OnLoad;
-                result.StreamSource = stream;
-                result.EndInit();
-                result.Freeze();
-            }
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            return result;
         }
     }
 }
