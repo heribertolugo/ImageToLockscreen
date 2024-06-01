@@ -38,7 +38,9 @@ namespace ImageToLockscreen.Ui.Models
             if (!Directory.Exists(options.OutputDirectory))
                 throw new DirectoryNotFoundException($"output directory not found: {options.OutputDirectory}");
 
-            string[] files = Directory.GetFiles(options.InputDirectory);
+            string[] files = Directory.EnumerateFiles(options.InputDirectory)
+                .Where(file => AllowedFileTypes.FileExtensions.Values.SelectMany(x => x).Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
             
             this.Total = files.Length;
 
@@ -106,7 +108,7 @@ namespace ImageToLockscreen.Ui.Models
                 image = new BitmapImage(new Uri(path));
                 image.Freeze();
             }
-            catch (OutOfMemoryException)
+            catch (Exception ex) when (ex is NotSupportedException || ex is OutOfMemoryException)
             {
                 return null;
             }
@@ -175,7 +177,7 @@ namespace ImageToLockscreen.Ui.Models
 
         private BitmapEncoder GetImageEncoder(string imageType)
         {
-            switch (imageType)
+            switch (imageType.ToLowerInvariant())
             {
                 case ".bmp":
                     return new BmpBitmapEncoder();
@@ -220,11 +222,7 @@ namespace ImageToLockscreen.Ui.Models
             if (!backgroundOption.IsBlurred)
                 return background;
 
-            var bmp = ImageHelper.BitmapSourceToBitmap(background);
-            ImageHelper.Blur(ref bmp, 8);
-            BitmapSource bg = ImageHelper.BitmapToImagesource(bmp);
-            bmp.Dispose();
-            return bg;
+            return ImageHelper.Blur(background, 15);
         }
         private BitmapSource ResizeImage(ImageSource source, Size targetSize, double dpiX = 96, double dpiY = 96)
         {
