@@ -49,8 +49,10 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.BackgroundFillColor = new SolidColorBrush(Colors.Black);
 
             this.Worker.WorkerReportsProgress = true;
+            this.Worker.WorkerSupportsCancellation = true;
             this.Worker.DoWork += Worker_DoWork;
             this.Worker.ProgressChanged += Worker_ProgressChanged;
+            this.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
 
 
@@ -219,12 +221,12 @@ namespace ImageToLockscreen.Ui.ViewModels
         {
             this.ConversionProgress = e.ProgressPercentage;
             this.ConversionProgressMessage = e.UserState as string;
+        }
 
-            if (this.ConversionProgress >= 100)
-            {
-                this.IsNotBusy = true;
-                this.ConversionProgressMessage = "done";
-            }
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.IsNotBusy = true;
+            this.ConversionProgressMessage = "done";
         }
         #endregion Worker Event Handlers
 
