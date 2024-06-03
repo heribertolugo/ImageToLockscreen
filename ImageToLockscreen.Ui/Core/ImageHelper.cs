@@ -38,15 +38,21 @@ namespace ImageToLockscreen.Ui.Core
 
             writableImage.WritePixels(new Int32Rect(0, 0, sourceImage.PixelWidth, sourceImage.PixelHeight), data, stride, 0);
 
-            switch (blurSpeed)
+            try
             {
-                case BlurSpeed.Slow:
-                    return blurMethod == BlurMethod.Linear ? LinearBlur(writableImage, blurSize) : GaussianBlur(writableImage, blurSize);
-                case BlurSpeed.Medium:
-                    return blurMethod == BlurMethod.Linear ?  LinearBlurParallel(writableImage, blurSize) : GaussianBlurParallel(writableImage, blurSize);
-                case BlurSpeed.Fast:
-                default:
-                    return blurMethod == BlurMethod.Linear ? LinearBlurParallel(writableImage, blurSize, false) : GaussianBlurParallel(writableImage, blurSize, false);
+                switch (blurSpeed)
+                {
+                    case BlurSpeed.Slow:
+                        return blurMethod == BlurMethod.Linear ? LinearBlur(writableImage, blurSize) : GaussianBlur(writableImage, blurSize);
+                    case BlurSpeed.Medium:
+                        return blurMethod == BlurMethod.Linear ? LinearBlurParallel(writableImage, blurSize) : GaussianBlurParallel(writableImage, blurSize);
+                    case BlurSpeed.Fast:
+                    default:
+                        return blurMethod == BlurMethod.Linear ? LinearBlurParallel(writableImage, blurSize, false) : GaussianBlurParallel(writableImage, blurSize, false);
+                }
+            }catch(OutOfMemoryException ex)
+            {
+                return null;
             }
         }
 
@@ -297,7 +303,8 @@ namespace ImageToLockscreen.Ui.Core
                 green[i] = (source[i] & 0x00ff00) >> 8;
                 blue[i] = (source[i] & 0x0000ff);
             });
-
+            sourceImage = null;
+            source = new int[0];
             return GaussianBlurParallelProcess(blurSize, width, height, alpha, red, green, blue, bytesPerPixel, options);
         }
 
@@ -328,6 +335,9 @@ namespace ImageToLockscreen.Ui.Core
 
             var writeableBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
             writeableBitmap.WritePixels(new Int32Rect(0, 0, width, height), dest, GetStride(width, bytesPerPixel), 0);
+
+            dest = newAlpha = newRed = newGreen = newBlue = dest = a = r = g = b = new int[0];
+
             return writeableBitmap;
         }
         private static void GaussianBlurParallel_4(int[] source, int[] dest, int r, int width, int height, ParallelOptions options)
