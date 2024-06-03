@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -[Security] to invite users to upgrade in case of vulnerabilities.
 
 ## 
-
+<!--- 
 ## [Unreleased] [x.00.00] - 0001-01-01 
 ### Added
 ### Changed
@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 ### Fixed
 ### Security
+-->
+
+## [v1.0.2-beta] - 2024-06-03 
+### Changed
+- Improved Blur speed
+- Changed Blur Method To Gaussian
 
 ## [v1.0.0-beta] - 2024-05-12 
 ### Added
