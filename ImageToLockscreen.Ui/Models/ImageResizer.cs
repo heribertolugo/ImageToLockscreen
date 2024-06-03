@@ -49,13 +49,15 @@ namespace ImageToLockscreen.Ui.Models
             foreach (var filename in files)
             {
                 await this.ProcessImage(filename, options.TargetRatio, options.OutputDirectory, options.BackgroundOption);
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
             }
             stopwatch.Stop();
             Console.WriteLine(stopwatch.Elapsed.ToString());
         }
 
         public int Progress { get => Volatile.Read(ref this._progress); }
-        public int BlurAmount { get; set; } = 40; // gaussian blur 40 ~= linear blur 10ish
+        public double BlurAmountPercentage { get; set; } = .005; // gaussian blur 40 ~= linear blur 10ish
         private async Task ProcessImage(string path, Ratio ratio, string targetDirectory, BackgroundOption backgroundOption)
         {
             string newFileName = Path.Combine(targetDirectory, Path.GetFileName(path));
@@ -102,8 +104,6 @@ namespace ImageToLockscreen.Ui.Models
             encoder.Frames.Clear();
 
             this.ProgressReached(new ImageResizerEventAgs((int)(newProgress / this.Total * 100), progressMessage, true));
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
         }
         private void ProgressReached(ImageResizerEventAgs e)
         {
@@ -164,6 +164,7 @@ namespace ImageToLockscreen.Ui.Models
         {
             Size canvasSize = CalcNewSizeFromRatio(ratio, new Size(image.PixelWidth, image.PixelHeight));
             BitmapSource background = GetBackground(backgroundOption, canvasSize);
+            if (background is null) return Task.FromResult((RenderTargetBitmap)null);
             DrawingGroup group = new DrawingGroup();
             Rect overlayRect = new Rect(
                 (background.PixelWidth - image.PixelWidth) / 2,
@@ -198,7 +199,7 @@ namespace ImageToLockscreen.Ui.Models
 
             double newValue = Math.Round(target/Math.Min(ratio.Height, ratio.Width), 0) * Math.Max(ratio.Width, ratio.Height);
 
-            System.Diagnostics.Debug.Assert(Math.Round(isWidthChange ? newValue/size.Height : size.Width/newValue, 1) == Math.Round(ratio.Width/ratio.Height, 1));
+            Debug.Assert(Math.Round(isWidthChange ? newValue/size.Height : size.Width/newValue, 0) == Math.Round(ratio.Width/ratio.Height, 0));
             
             return isWidthChange ? new Size(newValue, size.Height) : new Size(size.Width, newValue);
         }
@@ -218,7 +219,7 @@ namespace ImageToLockscreen.Ui.Models
             if (!backgroundOption.IsBlurred)
                 return background;
 
-            return ImageHelper.Blur(background, this.BlurAmount);
+            return ImageHelper.Blur(background, (int)Math.Round(Math.Max(size.Width, size.Height) * this.BlurAmountPercentage));
         }
         private BitmapSource ResizeImage(ImageSource source, Size targetSize, double dpiX = 96, double dpiY = 96)
         {
