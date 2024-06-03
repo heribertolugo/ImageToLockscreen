@@ -1,6 +1,7 @@
 ﻿using ImageToLockscreen.Ui.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -38,24 +39,35 @@ namespace ImageToLockscreen.Ui.Models
             if (!Directory.Exists(options.OutputDirectory))
                 throw new DirectoryNotFoundException($"output directory not found: {options.OutputDirectory}");
 
-            string[] files = Directory.GetFiles(options.InputDirectory);
+            string[] files = Directory.EnumerateFiles(options.InputDirectory)
+                .Where(file => AllowedFileTypes.FileExtensions.Values.SelectMany(x => x).Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
             
             this.Total = files.Length;
 
+            Stopwatch stopwatch = Stopwatch.StartNew();
             foreach (var filename in files)
             {
                 await this.ProcessImage(filename, options.TargetRatio, options.OutputDirectory, options.BackgroundOption);
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
             }
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.Elapsed.ToString());
         }
 
         public int Progress { get => Volatile.Read(ref this._progress); }
+        public double BlurAmountPercentage { get; set; } = .005; // gaussian blur 40 ~= linear blur 10ish
         private async Task ProcessImage(string path, Ratio ratio, string targetDirectory, BackgroundOption backgroundOption)
         {
-            string newFileName = Path.Combine(targetDirectory, Path.GetFileName(path)); 
+            string newFileName = Path.Combine(targetDirectory, Path.GetFileName(path));
+            int newProgress = Interlocked.Increment(ref this._progress);
+            string progressMessage = $"{this.Progress} / {this.Total}   {newFileName}";
+            this.ProgressReached(new ImageResizerEventAgs((int)((Math.Max(this.Progress - 1,0)) / this.Total * 100), progressMessage, true));
 
             if (!IsValidImageFile(path))
             {
-                this.ProgressReached(new ImageResizerEventAgs((int)(Interlocked.Increment(ref this._progress) / this.Total * 100), newFileName, false));
+                this.ProgressReached(new ImageResizerEventAgs((int)(newProgress / this.Total * 100), "Invalid Image. " + progressMessage, false));
                 return;
             }
 
@@ -63,7 +75,7 @@ namespace ImageToLockscreen.Ui.Models
 
             if (image is null)
             {
-                this.ProgressReached(new ImageResizerEventAgs((int)(Interlocked.Increment(ref this._progress) / this.Total * 100), newFileName, false));
+                this.ProgressReached(new ImageResizerEventAgs((int)(newProgress / this.Total * 100), "Bad Image. " + progressMessage, false));
                 return;
             }
 
@@ -75,7 +87,7 @@ namespace ImageToLockscreen.Ui.Models
 
             if (newImage is null)
             {
-                this.ProgressReached(new ImageResizerEventAgs((int)(Interlocked.Increment(ref this._progress) / this.Total * 100), newFileName, false));
+                this.ProgressReached(new ImageResizerEventAgs((int)(newProgress / this.Total * 100), "Error. " + progressMessage, false));
                 return;
             }
 
@@ -86,12 +98,12 @@ namespace ImageToLockscreen.Ui.Models
             using (var fileStream = new FileStream(newFileName, FileMode.Create))
             {
                 encoder.Save(fileStream);
+                fileStream.Flush();
+                fileStream.Close();
             }
             encoder.Frames.Clear();
 
-            this.ProgressReached(new ImageResizerEventAgs((int)(Interlocked.Increment(ref this._progress) / this.Total * 100), newFileName, true));
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            this.ProgressReached(new ImageResizerEventAgs((int)(newProgress / this.Total * 100), progressMessage, true));
         }
         private void ProgressReached(ImageResizerEventAgs e)
         {
@@ -103,10 +115,10 @@ namespace ImageToLockscreen.Ui.Models
             BitmapImage image = null;
             try
             {
-                image = new BitmapImage(new Uri(path));
+                image = ImageHelper.RotateImageByExifOrientationTag(new Uri(path));
                 image.Freeze();
             }
-            catch (OutOfMemoryException)
+            catch (Exception ex) when (ex is NotSupportedException || ex is OutOfMemoryException)
             {
                 return null;
             }
@@ -152,6 +164,7 @@ namespace ImageToLockscreen.Ui.Models
         {
             Size canvasSize = CalcNewSizeFromRatio(ratio, new Size(image.PixelWidth, image.PixelHeight));
             BitmapSource background = GetBackground(backgroundOption, canvasSize);
+            if (background is null) return Task.FromResult((RenderTargetBitmap)null);
             DrawingGroup group = new DrawingGroup();
             Rect overlayRect = new Rect(
                 (background.PixelWidth - image.PixelWidth) / 2,
@@ -175,22 +188,8 @@ namespace ImageToLockscreen.Ui.Models
 
         private BitmapEncoder GetImageEncoder(string imageType)
         {
-            switch (imageType)
-            {
-                case ".bmp":
-                    return new BmpBitmapEncoder();
-                case ".gif":
-                    return new GifBitmapEncoder();
-                case ".png":
-                    return new PngBitmapEncoder();
-                case ".tiff":
-                    return new TiffBitmapEncoder();
-                case ".jpg":
-                case ".jpeg":
-                case ".jiff":
-                    return new JpegBitmapEncoder();
-                default: throw new ArgumentNullException();
-            }
+            imageType = imageType.ToLowerInvariant();
+            return AllowedFileTypes.All.FirstOrDefault(t => t.Extensions.Any(x => x == imageType))?.GetEncoder() ?? throw new ArgumentNullException();
         }
 
         private Size CalcNewSizeFromRatio(Ratio ratio, Size size)
@@ -200,7 +199,7 @@ namespace ImageToLockscreen.Ui.Models
 
             double newValue = Math.Round(target/Math.Min(ratio.Height, ratio.Width), 0) * Math.Max(ratio.Width, ratio.Height);
 
-            System.Diagnostics.Debug.Assert(Math.Round(isWidthChange ? newValue/size.Height : size.Width/newValue, 1) == Math.Round(ratio.Width/ratio.Height, 1));
+            Debug.Assert(Math.Round(isWidthChange ? newValue/size.Height : size.Width/newValue, 0) == Math.Round(ratio.Width/ratio.Height, 0));
             
             return isWidthChange ? new Size(newValue, size.Height) : new Size(size.Width, newValue);
         }
@@ -220,11 +219,7 @@ namespace ImageToLockscreen.Ui.Models
             if (!backgroundOption.IsBlurred)
                 return background;
 
-            var bmp = ImageHelper.BitmapSourceToBitmap(background);
-            ImageHelper.Blur(ref bmp, 8);
-            BitmapSource bg = ImageHelper.BitmapToImagesource(bmp);
-            bmp.Dispose();
-            return bg;
+            return ImageHelper.Blur(background, (int)Math.Round(Math.Max(size.Width, size.Height) * this.BlurAmountPercentage));
         }
         private BitmapSource ResizeImage(ImageSource source, Size targetSize, double dpiX = 96, double dpiY = 96)
         {
