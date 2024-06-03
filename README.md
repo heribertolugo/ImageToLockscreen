@@ -82,7 +82,9 @@ You can however choose any ratio from the options provided. Hovering the mouse o
 Once you have the settings the way you want them, click convert and wait. 
 Currently the files get converted to a 96 dpi image, and the images retain the same file type.
 In the future I might allow the user to choose between what is detected on your monitors, or the dpi of the image being converted.
-**Choosing the blur option will impact performance** quite a bit, making the conversion pretty slow.
+~~**Choosing the blur option will impact performance** quite a bit, making the conversion pretty slow.~~ 
+Blur has been greatly improved! 
+Converting 315 images took less than 5 minutes on my machine. Most images were almost 2mb and average 2k*4k in size.
 
 
 ## Disclaimer
