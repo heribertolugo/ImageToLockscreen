@@ -20,9 +20,8 @@ Changing the options in Windows display settings did not help. Prior version of 
 To display the images correctly all you have to do is fix the aspect ratio of the image.
 
 ## ImageToLockscreen
-When selecting images to use as Windows lockscreen, if the image does not have the correct aspect ratio, the image will be rendered zoomed in to fill the entire area of the screen. 
 This app will fix the ratio of an image to the desired output size. It will NOT resize the actual image, instead it will overlay the image onto a background that confirms to the ratio desired.
-This means the original image will not get distorted due to resizing. There are several choices for what the background can be for the fixed output image.
+This means the original image will not get distorted due to resizing. There are several choices for what the background can be for the _"Fixed"_ output image.
 
 
 ![image](https://github.com/heribertolugo/ImageToLockscreen/assets/26213368/9e648a4d-3630-464c-9acd-b96f312d5dc7)
