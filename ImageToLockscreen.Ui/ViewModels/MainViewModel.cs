@@ -60,42 +60,74 @@ namespace ImageToLockscreen.Ui.ViewModels
         public string InputDirectory
         {
             get { return base.GetProperty<string>(); }
-            set { base.SetProperty(value); }
+            set 
+            { 
+                base.SetProperty(value); 
+                this.ResetProgress();
+            }
         }
         public string OutputDirectory
         {
             get { return base.GetProperty<string>(); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
         public DisplayWithValue SelectedBackgroundFillOption
         {
             get { return base.GetProperty<DisplayWithValue>(); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
         public string SelectedBackgroundFillOptionUrl
         {
             get { return base.GetProperty<string>(getDefault: () => string.Empty); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
         public bool IsSelectedBackgroundFillOptionUrl
         {
             get { return base.GetProperty<bool>(getDefault: () => false); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
         public bool IsBlurBackgroundImage
         {
             get { return base.GetProperty<bool>(getDefault: () => false); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
         public bool IsBackgroundFillSolidColor
         {
             get { return base.GetProperty<bool>(getDefault: () => true); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
         public SolidColorBrush BackgroundFillColor
         {
             get { return base.GetProperty<SolidColorBrush>(); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
 
         public Size CurrentScreenResolution
@@ -108,13 +140,18 @@ namespace ImageToLockscreen.Ui.ViewModels
                 this.SelectedAspectRatio = this.SlideViewerItems.FirstOrDefault(i => ((AspectRatio)i.Value).Resolutions.Any(r => r == this.CurrentScreenResolution));
                 if (this.SelectedAspectRatio == null)
                     this.SelectedAspectRatio = this.SlideViewerItems.FirstOrDefault(i => ((AspectRatio)i.Value).Height/ ((AspectRatio)i.Value).Width == this.CurrentScreenResolution.Height/ this.CurrentScreenResolution.Width);
+                this.ResetProgress();
             }
         }
 
         public SlideViewerItem SelectedAspectRatio
         {
             get { return base.GetProperty<SlideViewerItem>(); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
 
         public ObservableCollection<DisplayWithValue> BackgroundFillImageOptions
@@ -127,13 +164,18 @@ namespace ImageToLockscreen.Ui.ViewModels
             {
                 this._backgroundFillImageOptions = value;
                 base.OnPropertyChanged(nameof(BackgroundFillImageOptions));
+                this.ResetProgress();
             }
         }
 
         public ObservableCollection<SlideViewerItem> SlideViewerItems
         {
             get { return base.GetProperty<ObservableCollection<SlideViewerItem>>(getDefault: () => { return new ObservableCollection<SlideViewerItem>(); }); }
-            set { base.SetProperty(value); }
+            set
+            {
+                base.SetProperty(value);
+                this.ResetProgress();
+            }
         }
 
         public int ConversionProgress
@@ -163,6 +205,14 @@ namespace ImageToLockscreen.Ui.ViewModels
 
 
         #region Private ICommand
+        private void ResetProgress()
+        {
+            if (this.ConversionProgress >= 100)
+            {
+                this.ConversionProgress = 0;
+                this.ConversionProgressMessage = string.Empty;
+            }
+        }
         private bool BackgroundFillImageOptionSelectionChangedInternally = false;
         private void BackgroundFillImageOptionSelectionChanged()
         {
