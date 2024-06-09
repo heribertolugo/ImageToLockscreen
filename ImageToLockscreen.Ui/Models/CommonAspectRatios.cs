@@ -6,7 +6,7 @@ namespace ImageToLockscreen.Ui.Models
 {
     internal class CommonAspectRatios
     {
-        public static ObservableCollection<AspectRatio> CommonRatios;
+        public static ObservableCollection<AspectRatio> CommonRatios { get; private set; }
         static CommonAspectRatios()
         {
             CommonRatios = new ObservableCollection<AspectRatio>()
