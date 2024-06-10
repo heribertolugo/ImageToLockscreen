@@ -32,7 +32,7 @@ namespace ImageToLockscreen.Ui.Models
         private int _progress;
         private float Total { get; set; } = 0;
 
-        public async Task Resize(ImageResizerOptions options)
+        public async Task Resize(ImageResizerOptions options, CancellationToken cancellationToken)
         {
             if (!Directory.Exists(options.InputDirectory))
                 throw new DirectoryNotFoundException($"input directory not found: {options.InputDirectory}");
@@ -48,6 +48,8 @@ namespace ImageToLockscreen.Ui.Models
             Stopwatch stopwatch = Stopwatch.StartNew();
             foreach (var filename in files)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
                 await this.ProcessImage(filename, options.TargetRatio, options.OutputDirectory, options.BackgroundOption);
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
