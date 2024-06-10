@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -26,6 +27,7 @@ namespace ImageToLockscreen.Ui.ViewModels
             new DisplayWithValue("", BackgroundFillImageOption.Url, false)
         });
         private BackgroundWorker Worker { get; } = new BackgroundWorker();
+        private CancellationTokenSource CancellationTokenSource { get; set; }
         #endregion Private Members/Properties
 
         static MainViewModel()
@@ -46,6 +48,7 @@ namespace ImageToLockscreen.Ui.ViewModels
 
             this.BackgroundFillImageOptionSelectionChangedCommand = new RelayCommand(BackgroundFillImageOptionSelectionChanged);
             this.ConvertImagesCommand = new RelayCommand(this.ConvertImages);
+            this.CancelConversionCommand = new RelayCommand(this.CancelConversion);
             this.BackgroundFillColor = new SolidColorBrush(Colors.Black);
 
             this.Worker.WorkerReportsProgress = true;
@@ -54,7 +57,6 @@ namespace ImageToLockscreen.Ui.ViewModels
             this.Worker.ProgressChanged += Worker_ProgressChanged;
             this.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
-
 
         #region Public Properties
         public string InputDirectory
@@ -151,14 +153,29 @@ namespace ImageToLockscreen.Ui.ViewModels
         public bool IsNotBusy
         {
             get { return base.GetProperty<bool>(getDefault: () => true); }
-            set { base.SetProperty(value); }
+            set 
+            { 
+                base.SetProperty(value);
+                base.SetProperty(!value, nameof(this.IsBusy));
+            }
         }
+
+        public bool IsBusy
+        {
+            get { return base.GetProperty<bool>(getDefault: () => !this.IsNotBusy); }
+            set 
+            { 
+                base.SetProperty(value);
+            }
+        }
+
         #endregion Public Properties
 
 
         #region Public ICommand
         public ICommand BackgroundFillImageOptionSelectionChangedCommand { get; set; }
         public ICommand ConvertImagesCommand { get; set; }
+        public ICommand CancelConversionCommand { get; set; }
         #endregion Public ICommand
 
 
@@ -192,12 +209,18 @@ namespace ImageToLockscreen.Ui.ViewModels
         }
         private void ConvertImages()
         {
+            this.CancellationTokenSource = new CancellationTokenSource();
             string bgImage = SelectedBackgroundFillOption.Value == BackgroundFillImageOption.Self ? null : this.SelectedBackgroundFillOptionUrl;
             ImageResizerOptions options = this.IsBackgroundFillSolidColor ?
                 new ImageResizerOptions(this.InputDirectory, this.OutputDirectory, (this.SelectedAspectRatio.Value as AspectRatio).Ratio, this.BackgroundFillColor.Color) :
                 new ImageResizerOptions(this.InputDirectory, this.OutputDirectory, (this.SelectedAspectRatio.Value as AspectRatio).Ratio, bgImage, this.IsBlurBackgroundImage);
             this.IsNotBusy = false;
             this.Worker.RunWorkerAsync(options);
+        }
+        private void CancelConversion()
+        {
+            this.CancellationTokenSource.Cancel();
+            this.IsBusy = false;
         }
         #endregion Private ICommand
 
@@ -214,7 +237,7 @@ namespace ImageToLockscreen.Ui.ViewModels
                 Worker.ReportProgress(v.Progress, v.FileName);
             };
 
-            await resizer.Resize((ImageResizerOptions)e.Argument);
+            await resizer.Resize((ImageResizerOptions)e.Argument, this.CancellationTokenSource.Token);
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -226,7 +249,8 @@ namespace ImageToLockscreen.Ui.ViewModels
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.IsNotBusy = true;
-            this.ConversionProgressMessage = "done";
+            this.IsBusy = !this.IsNotBusy;
+            this.ConversionProgressMessage = $"{(this.CancellationTokenSource.IsCancellationRequested ? "cancelled" : "done")} {this.ConversionProgress}%";
         }
         #endregion Worker Event Handlers
 
