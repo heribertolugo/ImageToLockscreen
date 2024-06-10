@@ -142,7 +142,30 @@
             </DockPanel>
         </control:Card>
         <StackPanel Margin="5,20,14,20" Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-            <Button Content="Convert" Command="{Binding ConvertImagesCommand}" FontSize="15" Foreground="{Binding Source={StaticResource foreground}}" IsEnabled="{Binding IsNotBusy}">
+            <Button Content="Convert" Command="{Binding ConvertImagesCommand}" FontSize="15" Foreground="{Binding Source={StaticResource foreground}}" Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="BorderBrush" Value="{Binding Source={StaticResource fadedForeground}}"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}" Padding="10" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="{Binding Source={StaticResource foreground}}"/>
+                                <Setter Property="Background" Value="#19FFFFFF"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="Cancel" Command="{Binding CancelConversionCommand}" FontSize="15" Foreground="{Binding Source={StaticResource foreground}}" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="BorderBrush" Value="{Binding Source={StaticResource fadedForeground}}"/>
